@@ -1,11 +1,6 @@
 import Position from '../entities/position';
 import BaseException from '../exceptions/base.exception';
 
-const hrtimeMs = (): number => {
-  const time = process.hrtime();
-  return time[0] * 1000 + time[1] / 1000000;
-};
-
 const handleException = (exception: unknown): void => {
   if (exception instanceof BaseException) {
     console.warn(exception.message);
@@ -28,4 +23,4 @@ const findTargetInCircle = (center: Position, radius: number): Position => {
   return new Position(center.x + r * Math.cos(theta), center.y + r * Math.sin(theta));
 };
 
-export { hrtimeMs, handleException, isNear, findTargetInCircle };
+export { handleException, isNear, findTargetInCircle };

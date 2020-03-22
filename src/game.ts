@@ -1,6 +1,5 @@
 import Player from './entities/player';
 import Board from './entities/board';
-import { hrtimeMs } from './utils';
 
 type GameState = 'stopped' | 'started';
 
@@ -12,7 +11,6 @@ export default class Game {
   private _maxPlayers = 2;
 
   private _tickInterval = 1000 / fps;
-  private _previousTick: number;
   private _currentTickReference: NodeJS.Timer;
   private _stopCallback: () => void;
   private _state: GameState = 'stopped';
@@ -39,14 +37,6 @@ export default class Game {
 
   private _loop(callback: () => void): void {
     this._currentTickReference = setTimeout(() => this._loop(callback), this._tickInterval);
-    const now = hrtimeMs();
-    const delta = (now - this._previousTick) / 1000;
-
-    if (delta - this._tickInterval > this._tickInterval) {
-      console.warn(`FPS delta of ${delta}`);
-    }
-
-    this._previousTick = now;
     this._update();
     callback();
   }
@@ -55,7 +45,6 @@ export default class Game {
     if (this._state === 'stopped') {
       console.info('Game loop started');
       this._stopCallback = stopCallback;
-      this._previousTick = hrtimeMs();
       this._state = 'started';
       this._loop(syncCallback);
     }
