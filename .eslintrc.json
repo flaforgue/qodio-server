@@ -38,7 +38,6 @@
     ],
     "array-callback-return": "error",
     "block-scoped-var": "error",
-    "class-methods-use-this": "error",
     "default-case": ["error"],
     "default-param-last": ["error"],
     "guard-for-in": ["error"],
