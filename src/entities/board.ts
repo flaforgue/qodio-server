@@ -1,0 +1,32 @@
+import Resource from './resource';
+import Position from './position';
+import { isNear } from '../utils';
+
+export default class Board {
+  public readonly width: number;
+  public readonly height: number;
+  public readonly resources: Resource[] = [];
+
+  public constructor(width = 2400, height = 1200) {
+    this.width = width;
+    this.height = height;
+    this._generateResources(10);
+  }
+
+  private _generateResources(nbToGenerate: number): void {
+    for (let i = 0; i < nbToGenerate; i++) {
+      const initialResource = Math.floor(Math.random() * 70) + 30;
+      this.resources.push(new Resource(this.getRandomPosition(), initialResource));
+    }
+  }
+
+  public getRandomPosition(): Position {
+    return new Position(Math.random() * this.width, Math.random() * this.height);
+  }
+
+  public findResourcesIfPossible(position: Position, detectionDistance: number): Resource[] {
+    return this.resources.filter((resource) =>
+      isNear(position, resource.position, detectionDistance),
+    );
+  }
+}
