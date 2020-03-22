@@ -3,6 +3,7 @@ import Position from './position';
 import { DroneAction, Axis } from '../types/qodio-api';
 import Hive from './hive';
 import { isNear, findTargetInCircle } from '../utils';
+import Resource from './resource';
 
 /*
  * Number of pixels a Drone can travel in one Tick
@@ -12,9 +13,10 @@ const STEP = 1;
 
 export default class Drone extends PlayerEntity {
   private _action: DroneAction;
-  private _target: Position;
+  private _target?: Position;
+  private _knownResource?: Resource;
   private readonly _hive: Hive;
-  private readonly _resourceDetectionDistance = 10;
+  private readonly _resourceDetectionDistance = 30;
 
   public constructor(playerId: string, hive: Hive, action: DroneAction = 'waiting') {
     super(playerId, hive.position);
@@ -47,17 +49,31 @@ export default class Drone extends PlayerEntity {
   }
 
   private _updateScouting(): void {
-    if (!this._target || this._isOnTarget()) {
-      this._target = this._findRandomTargetInTerritory();
-    } else {
-      this._lookForResource();
-    }
+    if (this._isOnTarget()) {
+      this._target = null;
 
-    this._moveToTarget();
+      if (this._knownResource) {
+        this._hive.addKnownResource(this._knownResource);
+        this._knownResource = null;
+      }
+    } else {
+      if (!this._target) {
+        this._target = this._knownResource?.position ?? this._findRandomTargetInTerritory();
+      } else {
+        const resources = this._findNewResourcesInRange();
+
+        if (resources.length) {
+          this._knownResource = resources[0];
+          this._target = resources[0].position;
+        }
+
+        this._moveToTarget();
+      }
+    }
   }
 
   private _isOnTarget(): boolean {
-    return isNear(this.position, this._target, STEP);
+    return this._target ? isNear(this.position, this._target, STEP) : false;
   }
 
   private _findTargetInHive(): Position {
@@ -69,8 +85,8 @@ export default class Drone extends PlayerEntity {
   }
 
   private _moveToTarget(): void {
-    const hasToMoveByX = this._hasToMoveBy('x');
-    const hasToMoveByY = this._hasToMoveBy('y');
+    const hasToMoveByX = this._hasToMoveToTargetBy('x');
+    const hasToMoveByY = this._hasToMoveToTargetBy('y');
 
     if (hasToMoveByX && hasToMoveByY) {
       return Math.random() < 0.5 ? this._moveToTargetBy('x') : this._moveToTargetBy('y');
@@ -81,26 +97,21 @@ export default class Drone extends PlayerEntity {
     }
   }
 
-  private _hasToMoveBy(axis: Axis): boolean {
-    return this.position[axis] != this._target[axis];
+  private _hasToMoveToTargetBy(axis: Axis): boolean {
+    return this._target ? this.position[axis] != this._target[axis] : false;
   }
 
   private _moveToTargetBy(axis: Axis): void {
-    if (this._position[axis] < this._target[axis]) {
-      this._position[axis] += STEP;
-    } else if (this._position[axis] > this._target[axis]) {
-      this._position[axis] -= STEP;
+    if (this._target) {
+      if (this._position[axis] < this._target[axis]) {
+        this._position[axis] += STEP;
+      } else if (this._position[axis] > this._target[axis]) {
+        this._position[axis] -= STEP;
+      }
     }
   }
 
-  public _lookForResource(): void {
-    const resources = this._hive.findResourcesIfPossible(
-      this._position,
-      this._resourceDetectionDistance,
-    );
-
-    if (resources.length) {
-      this._hive.addKnownResources(resources);
-    }
+  public _findNewResourcesInRange(): Resource[] {
+    return this._hive._findNewResourcesInRange(this._position, this._resourceDetectionDistance);
   }
 }

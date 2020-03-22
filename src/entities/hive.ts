@@ -43,11 +43,11 @@ export default class Hive extends PlayerEntity {
     }
   }
 
-  public findResourcesIfPossible(position: Position, detectionDistance: number): Resource[] {
-    return this._player.findResourcesIfPossible(position, detectionDistance);
+  public _findNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
+    return this._player._findNewResourcesInRange(position, detectionDistance);
   }
 
-  public addKnownResources(resources: Resource[]): void {
-    this._player.addKnownResources(resources);
+  public addKnownResource(resource: Resource): void {
+    this._player.addKnownResource(resource);
   }
 }

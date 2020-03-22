@@ -20,11 +20,13 @@ export default class Player {
     return this._knownResources;
   }
 
-  public findResourcesIfPossible(position: Position, detectionDistance: number): Resource[] {
-    return this._board.findResourcesIfPossible(position, detectionDistance);
+  public _findNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
+    return this._board.findResourcesIfPossible(position, detectionDistance).filter((resource) => {
+      return !this._knownResources.some((knownResource) => knownResource.id === resource.id);
+    });
   }
 
-  public addKnownResources(resources: Resource[]): void {
-    this._knownResources.push(...resources);
+  public addKnownResource(resource: Resource): void {
+    this._knownResources.push(resource);
   }
 }

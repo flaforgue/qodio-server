@@ -3,12 +3,12 @@ import Board from './entities/board';
 
 type GameState = 'stopped' | 'started';
 
-const fps = 60;
+const fps = 120;
 
 export default class Game {
   private _board: Board;
   private _players: Player[] = [];
-  private _maxPlayers = 2;
+  private _maxPlayers = 1;
 
   private _tickInterval = 1000 / fps;
   private _currentTickReference: NodeJS.Timer;
