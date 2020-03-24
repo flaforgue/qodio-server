@@ -20,19 +20,27 @@ export default class Player {
     return this._knownResources;
   }
 
-  public _findNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
+  public detectNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
     return this._board
-      .findResourcesIfPossible(position, detectionDistance)
-      .filter((resource) => !this._doesKnowResource(resource));
+      .detectResourcesIfPossible(position, detectionDistance)
+      .filter((resource) => !this.doesKnowResource(resource));
   }
 
   public addKnownResource(resource: Resource): void {
-    if (!this._doesKnowResource(resource)) {
+    if (!this.doesKnowResource(resource)) {
       this._knownResources.push(resource);
     }
   }
 
-  private _doesKnowResource(resource: Resource): boolean {
+  public removeKnownResource(resourceId: string): void {
+    this._knownResources = this._knownResources.filter((resource) => resource.id != resourceId);
+  }
+
+  public doesKnowResource(resource: Resource): boolean {
     return this._knownResources.some((knownResource) => knownResource.id === resource.id);
+  }
+
+  public getKnownResource(): Resource | null {
+    return this._knownResources.length > 0 ? this._knownResources[0] : null;
   }
 }

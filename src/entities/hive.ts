@@ -1,20 +1,23 @@
 import PlayerEntity from './player-entity';
 import Drone from './drone';
 import Position from './position';
-import { DroneAction } from '../types/qodio-api';
+import { DroneAction } from '../types/qodio-server';
 import Resource from './resource';
 import Player from './player';
 
 export default class Hive extends PlayerEntity {
   private _level = 1;
+  private _resourceUnits = 0;
   private _drones: Drone[] = [];
-  private readonly _player: Player;
+  // todo: make private
+  public readonly _player: Player;
 
   public constructor(player: Player, position: Position) {
     super(player.id, position);
     this._player = player;
     this.addDrone();
     this.addDrone('scouting');
+    this.addDrone('gathering');
   }
 
   public get maxPopulation(): number {
@@ -43,11 +46,45 @@ export default class Hive extends PlayerEntity {
     }
   }
 
-  public _findNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
-    return this._player._findNewResourcesInRange(position, detectionDistance);
+  public detectNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
+    return this._player._detectNewResourcesInRange(position, detectionDistance);
   }
 
   public addKnownResource(resource: Resource): void {
     this._player.addKnownResource(resource);
+  }
+
+  public removeKnownResource(resourceId: string): void {
+    this._player.removeKnownResource(resourceId);
+  }
+
+  public getKnownResource(): Resource | null {
+    return this._player.getKnownResource();
+  }
+
+  public addResourceUnits(amount: number): void {
+    this._resourceUnits = +amount;
+
+    if (this._resourceUnits > this.maxStock) {
+      this._resourceUnits = this.maxStock;
+    }
+  }
+
+  public doesKnowResource(resource: Resource): boolean {
+    return this._player.doesKnowResource(resource);
+  }
+
+  /*
+   * Be careful using this method
+   * This check the position in a square, not in a cirlce
+   * Performances are more important than precision
+   */
+  public containsPosition(position: Position): boolean {
+    return (
+      position.x > this._position.x - this.radius &&
+      position.x < this._position.x + this.radius &&
+      position.y > this._position.y - this.radius &&
+      position.y < this._position.y + this.radius
+    );
   }
 }

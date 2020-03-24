@@ -1,8 +1,8 @@
 import PlayerEntity from './player-entity';
 import Position from './position';
-import { DroneAction, Axis } from '../types/qodio-api';
+import { DroneAction, Axis } from '../types/qodio-server';
 import Hive from './hive';
-import { isNear, findTargetInCircle } from '../utils';
+import { findTargetInCircle } from '../utils';
 import Resource from './resource';
 
 /*
@@ -12,11 +12,16 @@ import Resource from './resource';
 const STEP = 1;
 
 export default class Drone extends PlayerEntity {
+  private readonly _hive: Hive;
+
   private _action: DroneAction;
   private _target?: Position;
+  private _detectedResource?: Resource;
   private _knownResource?: Resource;
-  private readonly _hive: Hive;
-  private readonly _resourceDetectionDistance = 30;
+  private _carriedResourceUnits = 0;
+
+  private readonly _resourceDetectionRange = 30;
+  private readonly _carryingCapacity = 10;
 
   public constructor(playerId: string, hive: Hive, action: DroneAction = 'waiting') {
     super(playerId, hive.position);
@@ -32,6 +37,9 @@ export default class Drone extends PlayerEntity {
     switch (this._action) {
       case 'scouting':
         this._updateScouting();
+        break;
+      case 'gathering':
+        this._updateGathering();
         break;
       case 'waiting':
       default:
@@ -49,31 +57,80 @@ export default class Drone extends PlayerEntity {
   }
 
   private _updateScouting(): void {
+    if (this._detectedResource && this._hive.doesKnowResource(this._detectedResource)) {
+      this._detectedResource = null;
+      this._target = null;
+    }
+
+    if (!this._target) {
+      this._target = this._detectedResource?.position ?? this._findRandomTargetInTerritory();
+    }
+
     if (this._isOnTarget()) {
       this._target = null;
 
-      if (this._knownResource) {
-        this._hive.addKnownResource(this._knownResource);
-        this._knownResource = null;
+      if (this._detectedResource) {
+        this._hive.addKnownResource(this._detectedResource);
+        this._detectedResource = null;
       }
     } else {
-      if (!this._target) {
-        this._target = this._knownResource?.position ?? this._findRandomTargetInTerritory();
-      } else {
-        const resources = this._findNewResourcesInRange();
+      this._moveToTarget();
 
-        if (resources.length) {
-          this._knownResource = resources[0];
-          this._target = resources[0].position;
+      if (!this._detectedResource) {
+        const detectedResources = this._detectNewResourcesInRange();
+        const resource = detectedResources.length ? detectedResources[0] : null;
+
+        if (resource) {
+          this._detectedResource = resource;
+          this._target = resource.position;
         }
-
-        this._moveToTarget();
       }
     }
   }
 
+  private _updateGathering(): void {
+    if (!this._knownResource) {
+      this._knownResource = this._getKnownResource();
+    }
+
+    if (this._knownResource) {
+      if (this._knownResource.stock <= 0 && this._carriedResourceUnits === 0) {
+        this._hive.removeKnownResource(this._knownResource.id);
+        this._knownResource = null;
+      } else {
+        this._updateTargetIfGathering();
+        this._moveToTarget();
+        this._gatherOrStoreResource();
+      }
+    } else {
+      if (this._target && !this._hive.containsPosition(this._target)) {
+        this._target = null;
+      }
+
+      this._updateWaiting();
+    }
+  }
+
+  private _gatherOrStoreResource(): void {
+    const canGather = this._carriedResourceUnits === 0 && this.isNear(this._knownResource.position);
+    if (canGather) {
+      this._carriedResourceUnits = this._knownResource.provideResourceUnits(this._carryingCapacity);
+    } else if (this._carriedResourceUnits > 0 && this.isNear(this._hive.position)) {
+      this._hive.addResourceUnits(this._carriedResourceUnits);
+      this._carriedResourceUnits = 0;
+    }
+  }
+
+  private _updateTargetIfGathering(): void {
+    if (this._carriedResourceUnits === 0) {
+      this._target = this._knownResource.position;
+    } else {
+      this._target = this._hive.position;
+    }
+  }
+
   private _isOnTarget(): boolean {
-    return this._target ? isNear(this.position, this._target, STEP) : false;
+    return this._target ? this.isNear(this._target, STEP) : false;
   }
 
   private _findTargetInHive(): Position {
@@ -111,7 +168,11 @@ export default class Drone extends PlayerEntity {
     }
   }
 
-  public _findNewResourcesInRange(): Resource[] {
-    return this._hive._findNewResourcesInRange(this._position, this._resourceDetectionDistance);
+  private _detectNewResourcesInRange(): Resource[] {
+    return this._hive.detectNewResourcesInRange(this._position, this._resourceDetectionRange);
+  }
+
+  private _getKnownResource(): Resource | null {
+    return this._hive.getKnownResource();
   }
 }
