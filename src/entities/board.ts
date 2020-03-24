@@ -2,7 +2,7 @@ import Resource from './resource';
 import Position from './position';
 import { isNear } from '../utils';
 
-const resourceConcentration = 0.00003; // resource per pixels square
+const resourceConcentration = 0.0005; // resource per pixels square
 
 export default class Board {
   public readonly width: number;
