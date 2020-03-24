@@ -27,7 +27,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
       socket.emit('self.create', plainToClass(PlayerDTO, player));
 
       socket.on('disconnect', () => {
-        game.removePlayer(player);
+        game.removePlayer(player.id);
         socket.broadcast.emit('player.delete', plainToClass(PlayerDTO, player));
       });
 

@@ -15,7 +15,7 @@ export default class Entity {
     return this._position;
   }
 
-  public isNear(target: Position, precision = 0): boolean {
+  public isNear(target: Position, precision = 1): boolean {
     return isNear(this._position, target, precision);
   }
 }

@@ -9,9 +9,6 @@ const handleException = (exception: unknown): void => {
   }
 };
 
-/*
- * Warning: a precision of 0 can lead to unreachable positions
- */
 const isNear = (position: Position, target: Position, precision = 1): boolean => {
   return (
     Math.abs(position.x - target.x) <= precision && Math.abs(position.y - target.y) <= precision

@@ -1,5 +1,6 @@
 import Player from './entities/player';
 import Board from './entities/board';
+import Position from './entities/position';
 
 type GameState = 'stopped' | 'started';
 
@@ -60,7 +61,8 @@ export default class Game {
   }
 
   public addPlayer(): Player {
-    const position = this._board.getRandomPosition();
+    // const position = this._board.getRandomPosition();
+    const position = new Position(this._board.width / 2, this._board.height / 2);
     const player = new Player(this._board, position);
     this._players.push(player);
 
