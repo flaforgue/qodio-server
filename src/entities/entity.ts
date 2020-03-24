@@ -1,5 +1,6 @@
 import Position from './position';
 import { v1 as uuidv1 } from 'uuid';
+import { isNear } from '../utils';
 
 export default class Entity {
   protected _position: Position;
@@ -12,5 +13,9 @@ export default class Entity {
 
   public get position(): Position {
     return this._position;
+  }
+
+  public isNear(target: Position, precision = 0): boolean {
+    return isNear(this._position, target, precision);
   }
 }
