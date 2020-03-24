@@ -2,7 +2,7 @@ import PlayerEntity from './player-entity';
 import Position from './position';
 import { DroneAction, Axis } from '../types/qodio-server';
 import Hive from './hive';
-import { findTargetInCircle } from '../utils';
+import { findTargetInCircle, randomFromArray } from '../utils';
 import Resource from './resource';
 
 /*
@@ -33,6 +33,10 @@ export default class Drone extends PlayerEntity {
     return this._action;
   }
 
+  public get carriedResourceUnits(): number {
+    return this._carriedResourceUnits;
+  }
+
   public update(): void {
     switch (this._action) {
       case 'scouting':
@@ -57,7 +61,7 @@ export default class Drone extends PlayerEntity {
   }
 
   private _updateScouting(): void {
-    if (this._detectedResource && this._hive.doesKnowResource(this._detectedResource)) {
+    if (this._detectedResource && this._hive.doesKnowResource(this._detectedResource.id)) {
       this._detectedResource = null;
       this._target = null;
     }
@@ -78,7 +82,7 @@ export default class Drone extends PlayerEntity {
 
       if (!this._detectedResource) {
         const detectedResources = this._detectNewResourcesInRange();
-        const resource = detectedResources.length ? detectedResources[0] : null;
+        const resource = detectedResources.length ? randomFromArray(detectedResources) : null;
 
         if (resource) {
           this._detectedResource = resource;

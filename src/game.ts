@@ -73,9 +73,16 @@ export default class Game {
     return this.players.length >= this._maxPlayers;
   }
 
-  public removePlayer(player: Player): void {
-    this._players = this._players.filter((p) => p.id !== player.id);
-    console.info(`Player ${player.id} left (${this._players.length}/${this._maxPlayers})`);
+  public removePlayer(playerId: string): void {
+    for (let i = 0; i < this._players.length; i++) {
+      if (this._players[i].id != playerId) {
+        this._players.splice(i, 1);
+        return;
+      }
+    }
+
+    console.info(`Player ${playerId} left (${this._players.length}/${this._maxPlayers})`);
+
     this.stopGameLoop();
   }
 }

@@ -1,5 +1,5 @@
 import Position from './position';
-import { v1 as uuidv1 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { isNear } from '../utils';
 
 export default class Entity {
@@ -7,7 +7,7 @@ export default class Entity {
   public readonly id: string;
 
   public constructor(position: Position) {
-    this.id = uuidv1();
+    this.id = uuidv4();
     this._position = { ...position };
   }
 

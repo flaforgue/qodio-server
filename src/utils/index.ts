@@ -25,4 +25,8 @@ const findTargetInCircle = (center: Position, radius: number): Position => {
   return new Position(center.x + r * Math.cos(theta), center.y + r * Math.sin(theta));
 };
 
-export { handleException, isNear, findTargetInCircle };
+const randomFromArray = <T>(arr: T[]): T => {
+  return arr[Math.floor(Math.random() * arr.length)];
+};
+
+export { handleException, isNear, findTargetInCircle, randomFromArray };

@@ -9,19 +9,23 @@ export default class Hive extends PlayerEntity {
   private _level = 1;
   private _resourceUnits = 0;
   private _drones: Drone[] = [];
-  // todo: make private
-  public readonly _player: Player;
+  private readonly _player: Player;
 
   public constructor(player: Player, position: Position) {
     super(player.id, position);
     this._player = player;
     this.addDrone();
-    this.addDrone('scouting');
-    this.addDrone('gathering');
+    for (let i = 0; i < 100; i++) {
+      this.addDrone('scouting');
+    }
+
+    for (let i = 0; i < 100; i++) {
+      this.addDrone('gathering');
+    }
   }
 
   public get maxPopulation(): number {
-    return 10 * this._level;
+    return 10000 * this._level;
   }
 
   public get maxStock(): number {
@@ -47,7 +51,7 @@ export default class Hive extends PlayerEntity {
   }
 
   public detectNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
-    return this._player._detectNewResourcesInRange(position, detectionDistance);
+    return this._player.detectNewResourcesInRange(position, detectionDistance);
   }
 
   public addKnownResource(resource: Resource): void {
@@ -70,8 +74,8 @@ export default class Hive extends PlayerEntity {
     }
   }
 
-  public doesKnowResource(resource: Resource): boolean {
-    return this._player.doesKnowResource(resource);
+  public doesKnowResource(resourceId: string): boolean {
+    return this._player.doesKnowResource(resourceId);
   }
 
   /*
