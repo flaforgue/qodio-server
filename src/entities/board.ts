@@ -26,7 +26,7 @@ export default class Board {
     return new Position(Math.random() * this.width, Math.random() * this.height);
   }
 
-  public findResourcesIfPossible(position: Position, detectionDistance: number): Resource[] {
+  public detectResourcesIfPossible(position: Position, detectionDistance: number): Resource[] {
     return this.resources.filter((resource) =>
       isNear(position, resource.position, detectionDistance),
     );
