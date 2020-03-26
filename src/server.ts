@@ -26,7 +26,8 @@ io.on('connection', (socket: SocketIO.Socket) => {
       const player = game.addPlayer();
       socket.emit('self.create', plainToClass(PlayerDTO, player));
 
-      socket.on('disconnect', () => {
+      socket.on('disconnect', (reason) => {
+        console.warn('Player disconnected: ', reason);
         game.removePlayer(player.id);
         socket.broadcast.emit('player.delete', plainToClass(PlayerDTO, player));
       });
