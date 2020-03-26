@@ -9,7 +9,7 @@ export default class BoardDTO {
   @Expose()
   public height: number;
 
-  // @Expose()
+  @Expose()
   @Type(() => ResourceDTO)
   public resources: ResourceDTO[];
 }
