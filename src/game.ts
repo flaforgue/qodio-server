@@ -1,6 +1,7 @@
 import Player from './entities/player';
 import Board from './entities/board';
 import Position from './entities/position';
+import { hrtimeMs } from './utils';
 
 type GameState = 'stopped' | 'started';
 
@@ -37,9 +38,19 @@ export default class Game {
   }
 
   private _loop(callback: () => void): void {
-    this._currentTickReference = setTimeout(() => this._loop(callback), this._tickInterval);
+    const start = hrtimeMs();
     this._update();
     callback();
+    const frameTime = hrtimeMs() - start;
+
+    if (frameTime < this._tickInterval) {
+      this._currentTickReference = setTimeout(
+        () => this._loop(callback),
+        this._tickInterval - frameTime,
+      );
+    } else {
+      setImmediate(() => this._loop(callback));
+    }
   }
 
   public startGameLoop(syncCallback: () => void, stopCallback: () => void): void {
