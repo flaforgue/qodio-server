@@ -5,7 +5,7 @@ const handleException = (exception: unknown): void => {
   if (exception instanceof BaseException) {
     console.warn(exception.message);
   } else {
-    console.error(exception);
+    throw exception;
   }
 };
 
@@ -26,4 +26,9 @@ const randomFromArray = <T>(arr: T[]): T => {
   return arr[Math.floor(Math.random() * arr.length)];
 };
 
-export { handleException, isNear, findTargetInCircle, randomFromArray };
+const hrtimeMs = (): number => {
+  const time = process.hrtime();
+  return time[0] * 1000 + time[1] / 1000000;
+};
+
+export { handleException, isNear, findTargetInCircle, randomFromArray, hrtimeMs };
