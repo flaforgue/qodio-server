@@ -33,17 +33,19 @@ export default class Player {
     }
   }
 
-  public removeKnownResource(resourceId: string): void {
+  public deleteKnownResource(resourceId: string): void {
+    this._board.deleteKnownResource(resourceId);
+
     for (let i = 0; i < this._knownResources.length; i++) {
       if (this._knownResources[i].id === resourceId) {
-        this._knownResources.splice(i, 1);
+        this._knownResources.splice(i, 1)[0];
         return;
       }
     }
   }
 
   public doesKnowResource(resourceId: string): boolean {
-    return this._knownResources.some((knownResource) => knownResource.id === resourceId);
+    return this._knownResources.some((resource) => resource.id === resourceId);
   }
 
   public getKnownResource(): Resource | null {

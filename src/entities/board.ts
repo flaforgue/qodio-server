@@ -31,4 +31,13 @@ export default class Board {
       isNear(position, resource.position, detectionDistance),
     );
   }
+
+  public deleteKnownResource(resourceId: string): void {
+    for (let i = 0; i < this.resources.length; i++) {
+      if (this.resources[i].id === resourceId) {
+        this.resources.splice(i, 1)[0];
+        return;
+      }
+    }
+  }
 }

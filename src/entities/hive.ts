@@ -15,6 +15,7 @@ export default class Hive extends PlayerEntity {
     super(player.id, position);
     this._player = player;
     this.addDrone();
+
     for (let i = 0; i < 100; i++) {
       this.addDrone('scouting');
     }
@@ -58,8 +59,8 @@ export default class Hive extends PlayerEntity {
     this._player.addKnownResource(resource);
   }
 
-  public removeKnownResource(resourceId: string): void {
-    this._player.removeKnownResource(resourceId);
+  public deleteKnownResource(resourceId: string): void {
+    this._player.deleteKnownResource(resourceId);
   }
 
   public getKnownResource(): Resource | null {

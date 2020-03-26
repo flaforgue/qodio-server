@@ -119,7 +119,7 @@ export default class Drone extends PlayerEntity {
     if (canGather) {
       this._carriedResourceUnits = this._knownResource.provideResourceUnits(this._carryingCapacity);
       if (this._knownResource.stock <= 0) {
-        this._hive.removeKnownResource(this._knownResource.id);
+        this._hive.deleteKnownResource(this._knownResource.id);
       }
     } else if (this._carriedResourceUnits > 0 && this.isNear(this._hive.position)) {
       this._hive.addResourceUnits(this._carriedResourceUnits);
