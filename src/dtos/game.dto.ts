@@ -14,4 +14,7 @@ export default class GameDTO {
 
   @Expose()
   public maxPlayers: number;
+
+  @Expose()
+  public nbTick: number;
 }

@@ -14,6 +14,7 @@ export default class Hive extends PlayerEntity {
   public constructor(player: Player, position: Position) {
     super(player.id, position);
     this._player = player;
+
     this.addDrone();
 
     for (let i = 0; i < 100; i++) {
@@ -26,11 +27,11 @@ export default class Hive extends PlayerEntity {
   }
 
   public get maxPopulation(): number {
-    return 10000 * this._level;
+    return 200 * this._level;
   }
 
   public get maxStock(): number {
-    return 20 * this._level;
+    return 200 * this._level;
   }
 
   public get radius(): number {
@@ -38,7 +39,7 @@ export default class Hive extends PlayerEntity {
   }
 
   public get territoryRadius(): number {
-    return 20 * this._level + 200;
+    return 3 * this._drones.length + 200;
   }
 
   public get drones(): Drone[] {
