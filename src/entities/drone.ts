@@ -8,6 +8,7 @@ import Resource from './resource';
 /*
  * Number of pixels a Drone can travel in one Tick
  * Increase it will decrease the impact of a low FPS but will add a twitch effect
+ * Never really tested, use it carefully
  */
 const STEP = 1;
 

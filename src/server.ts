@@ -32,11 +32,15 @@ io.on('connection', (socket: SocketIO.Socket) => {
       socket.emit('self.create', plainToClass(PlayerDTO, player));
 
       socket.on('disconnect', (reason) => {
-        console.warn(`Player disconnected: ${reason}, after ${(Date.now() - game.start) / 1000}s`);
-        game.removePlayer(player.id);
-        socket.broadcast.emit('player.delete', plainToClass(PlayerDTO, player));
-        game.stopGameLoop();
-        game = null;
+        if (game && game.state === 'started') {
+          console.warn(
+            `Player disconnected: ${reason}, after ${(Date.now() - game.start) / 1000}s`,
+          );
+          game.removePlayer(player.id);
+          socket.broadcast.emit('player.delete', plainToClass(PlayerDTO, player));
+          game.stopGameLoop();
+          game = null;
+        }
       });
 
       socket.on('ping', () => {
@@ -48,7 +52,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
       });
 
       if (game.isFull) {
-        game.startGameLoop(socket);
+        game.startGameLoop(io.sockets);
       }
     } else {
       throw new GameIsFullException();

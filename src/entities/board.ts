@@ -2,14 +2,14 @@ import Resource from './resource';
 import Position from './position';
 import { isNear } from '../utils';
 
-const resourceConcentration = 0.0005; // resource per pixels square
+const resourceConcentration = 0.00005; // resource per pixels square
 
 export default class Board {
   public readonly width: number;
   public readonly height: number;
   public readonly resources: Resource[] = [];
 
-  public constructor(width = 1200, height = 600) {
+  public constructor(width = 2400, height = 1200) {
     this.width = width;
     this.height = height;
     this._generateResources(Math.floor(this.width * this.height * resourceConcentration));

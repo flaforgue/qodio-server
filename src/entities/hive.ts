@@ -39,7 +39,7 @@ export default class Hive extends PlayerEntity {
   }
 
   public get territoryRadius(): number {
-    return 3 * this._drones.length + 200;
+    return 2 * this._drones.length + 200;
   }
 
   public get drones(): Drone[] {

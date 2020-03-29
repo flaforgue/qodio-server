@@ -1,26 +1,24 @@
 import SocketIO from 'socket.io';
 import Player from './entities/player';
 import Board from './entities/board';
-import Position from './entities/position';
 import { hrtimeMs } from './utils';
 import { plainToClass } from 'class-transformer';
 import GameDTO from './dtos/game.dto';
 
 type GameState = 'stopped' | 'started';
 
-const fps = 120;
+const fps = 60;
 
 export default class Game {
   private _start: number;
-  private _socket: SocketIO.Socket;
+  private _namespace: SocketIO.Namespace;
   private _board: Board;
   private _players: Player[] = [];
-  private _maxPlayers = 1;
+  private _maxPlayers = 2;
 
   private _tickInterval = 1000 / fps;
   private _currentTickReference: NodeJS.Timer;
   private _state: GameState = 'stopped';
-  public nbTick = 0;
 
   public constructor() {
     this._board = new Board();
@@ -46,13 +44,19 @@ export default class Game {
     });
   }
 
+  private _emit(): void {
+    for (const socketId in this._namespace.sockets) {
+      if (Object.prototype.hasOwnProperty.call(this._namespace.sockets, socketId)) {
+        this._namespace.sockets[socketId].volatile.emit('game.tick', plainToClass(GameDTO, this));
+      }
+    }
+  }
+
   private _loop(): void {
-    console.log((Date.now() - this._start) / 1000);
+    // console.log((Date.now() - this._start) / 1000);
     const start = hrtimeMs();
-    this.nbTick++;
-    console.log(this.nbTick);
     this._update();
-    this._socket.volatile.emit('game.tick', plainToClass(GameDTO, this));
+    this._emit();
     const frameTime = hrtimeMs() - start;
 
     if (frameTime < this._tickInterval) {
@@ -62,10 +66,10 @@ export default class Game {
     }
   }
 
-  public startGameLoop(socket: SocketIO.Socket): void {
+  public startGameLoop(namespace: SocketIO.Namespace): void {
     if (this._state === 'stopped') {
       console.info('Game loop started');
-      this._socket = socket;
+      this._namespace = namespace;
       this._state = 'started';
       this._start = Date.now();
       this._loop();
@@ -77,7 +81,7 @@ export default class Game {
       console.info('Game loop stopping');
       clearImmediate(this._currentTickReference);
       clearTimeout(this._currentTickReference);
-      this._socket.emit('game.stop');
+      this._namespace.emit('game.stop');
       this._state = 'stopped';
       console.info('Game loop stopped');
     } else {
@@ -86,8 +90,7 @@ export default class Game {
   }
 
   public addPlayer(): Player {
-    // const position = this._board.getRandomPosition();
-    const position = new Position(this._board.width / 2, this._board.height / 2);
+    const position = this._board.getRandomPosition();
     const player = new Player(this._board, position);
     this._players.push(player);
 
