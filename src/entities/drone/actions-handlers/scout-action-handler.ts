@@ -1,6 +1,6 @@
 import BaseActionHandler from './base-action-handler';
 import { findTargetInCircle } from '../../../utils';
-import Position from '../../position';
+import Position from '../../shared/position';
 import Resource from '../../resource';
 
 export default class ScoutActionHandler extends BaseActionHandler {

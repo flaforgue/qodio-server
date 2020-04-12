@@ -1,5 +1,5 @@
 import Hive from './hive';
-import Position from './position';
+import Position from './shared/position';
 import { v4 as uuidv4 } from 'uuid';
 import Board from './board';
 import Resource from './resource';

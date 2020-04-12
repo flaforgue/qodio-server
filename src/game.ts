@@ -4,19 +4,18 @@ import Board from './entities/board';
 import { hrtimeMs } from './utils';
 import { plainToClass } from 'class-transformer';
 import GameDTO from './dtos/game.dto';
+import config from './config';
 
 type GameState = 'stopped' | 'started';
 
-const fps = 60;
-
 export default class Game {
   private _start: number;
-  private _namespace: SocketIO.Namespace;
-  private _board: Board;
-  private _players: Player[] = [];
-  private _maxPlayers = 2;
 
-  private _tickInterval = 1000 / fps;
+  private readonly _maxPlayers = 1;
+  private readonly _board: Board;
+  private _namespace: SocketIO.Namespace;
+  private _players: Player[] = [];
+  private readonly _tickInterval = 1000 / config.fps;
   private _currentTickReference: NodeJS.Timer;
   private _state: GameState = 'stopped';
 
@@ -53,7 +52,6 @@ export default class Game {
   }
 
   private _loop(): void {
-    // console.log((Date.now() - this._start) / 1000);
     const start = hrtimeMs();
     this._update();
     this._emit();

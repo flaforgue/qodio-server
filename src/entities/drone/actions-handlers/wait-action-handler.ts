@@ -1,5 +1,5 @@
 import BaseActionHandler from './base-action-handler';
-import Position from '../../position';
+import Position from '../../shared/position';
 import { findTargetInCircle } from '../../../utils';
 
 export default class WaitActionHandler extends BaseActionHandler {

@@ -1,5 +1,5 @@
-import BaseEntity from './base-entity';
-import Position from './position';
+import BaseEntity from './shared/base-entity';
+import Position from './shared/position';
 
 export default class Resource extends BaseEntity {
   private _stock: number;

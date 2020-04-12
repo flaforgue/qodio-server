@@ -1,5 +1,5 @@
 import Resource from './resource';
-import Position from './position';
+import Position from './shared/position';
 import { isNear } from '../utils';
 
 const resourceConcentration = 0.00005; // resource per pixels square

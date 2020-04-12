@@ -1,6 +1,6 @@
-import BasePlayerEntity from './player-entity';
+import BasePlayerEntity from './shared/player-entity';
 import Drone from './drone/drone';
-import Position from './position';
+import Position from './shared/position';
 import { DroneAction } from '../types/qodio-server';
 import Resource from './resource';
 import Player from './player';
@@ -81,11 +81,7 @@ export default class Hive extends BasePlayerEntity {
     return this._player.doesKnowResource(resourceId);
   }
 
-  /*
-   * Be careful using this method
-   * This check the position in a square, not in a cirlce
-   * Performances are more important than precision
-   */
+  // Warning: the Hive is here considered as a square to improve performances
   public containsPosition(position: Position): boolean {
     return (
       position.x > this._position.x - this.radius &&

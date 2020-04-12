@@ -1,6 +1,6 @@
 import Position from './position';
 import { v4 as uuidv4 } from 'uuid';
-import { isNear } from '../utils';
+import { isNear } from '../../utils';
 
 export default class BaseEntity {
   protected _position: Position;

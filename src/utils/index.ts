@@ -1,4 +1,4 @@
-import Position from '../entities/position';
+import Position from '../entities/shared/position';
 import BaseException from '../exceptions/base.exception';
 
 const handleException = (exception: unknown): void => {
