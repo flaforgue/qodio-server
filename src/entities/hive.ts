@@ -1,13 +1,12 @@
-import PlayerEntity from './player-entity';
-import Drone from './drone';
+import BasePlayerEntity from './player-entity';
+import Drone from './drone/drone';
 import Position from './position';
 import { DroneAction } from '../types/qodio-server';
 import Resource from './resource';
 import Player from './player';
 
-export default class Hive extends PlayerEntity {
-  private _level = 1;
-  private _resourceUnits = 0;
+export default class Hive extends BasePlayerEntity {
+  private _stock = 0;
   private _drones: Drone[] = [];
   private readonly _player: Player;
 
@@ -15,31 +14,33 @@ export default class Hive extends PlayerEntity {
     super(player.id, position);
     this._player = player;
 
-    this.addDrone();
-
     for (let i = 0; i < 100; i++) {
-      this.addDrone('scouting');
+      this.addDrone('scout');
     }
 
     for (let i = 0; i < 100; i++) {
-      this.addDrone('gathering');
+      this.addDrone('gather');
     }
   }
 
   public get maxPopulation(): number {
-    return 200 * this._level;
+    return 200;
   }
 
   public get maxStock(): number {
-    return 200 * this._level;
+    return 1000;
   }
 
   public get radius(): number {
-    return 5 * this._level + 50;
+    return 50;
   }
 
   public get territoryRadius(): number {
-    return 2 * this._drones.length + 200;
+    return 1 * this._drones.length + 200;
+  }
+
+  public get stock(): number {
+    return this._stock;
   }
 
   public get drones(): Drone[] {
@@ -69,10 +70,10 @@ export default class Hive extends PlayerEntity {
   }
 
   public addResourceUnits(amount: number): void {
-    this._resourceUnits = +amount;
+    this._stock += amount;
 
-    if (this._resourceUnits > this.maxStock) {
-      this._resourceUnits = this.maxStock;
+    if (this._stock > this.maxStock) {
+      this._stock = this.maxStock;
     }
   }
 
