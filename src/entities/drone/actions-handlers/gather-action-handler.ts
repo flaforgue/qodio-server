@@ -3,7 +3,12 @@ import Resource from '../../resource';
 
 export default class GatherActionHandler extends BaseActionHandler {
   private _knownResource?: Resource;
-  private readonly _carryingCapacity = 30;
+  private readonly _carryingCapacity = 1;
+  private _carriedResourceUnits = 0;
+
+  public get carriedResourceUnits(): number {
+    return this._carriedResourceUnits;
+  }
 
   public handle(): boolean {
     if (!this._knownResource) {
@@ -11,7 +16,7 @@ export default class GatherActionHandler extends BaseActionHandler {
     }
 
     if (this._knownResource) {
-      if (this._knownResource.stock <= 0 && this._drone.carriedResourceUnits === 0) {
+      if (this._knownResource.stock <= 0 && this._carriedResourceUnits === 0) {
         this._knownResource = null;
       } else {
         this._updateTargetIfGathering();
@@ -30,7 +35,7 @@ export default class GatherActionHandler extends BaseActionHandler {
   }
 
   private _updateTargetIfGathering(): void {
-    if (this._drone.carriedResourceUnits === 0) {
+    if (this._carriedResourceUnits === 0) {
       this._drone.target = this._knownResource.position;
     } else {
       this._drone.target = this._drone.hive.position;
@@ -38,17 +43,15 @@ export default class GatherActionHandler extends BaseActionHandler {
   }
 
   private _gatherOrStoreResource(): void {
-    if (!this._drone.carriedResourceUnits && this._drone.isNear(this._knownResource.position)) {
+    if (!this._carriedResourceUnits && this._drone.isNear(this._knownResource.position)) {
       this._gatherResource();
-    } else if (this._drone.carriedResourceUnits && this._drone.isNear(this._drone.hive.position)) {
+    } else if (this._carriedResourceUnits && this._drone.isNear(this._drone.hive.position)) {
       this._storeResource();
     }
   }
 
   private _gatherResource(): void {
-    this._drone.carriedResourceUnits = this._knownResource.provideResourceUnits(
-      this._carryingCapacity,
-    );
+    this._carriedResourceUnits = this._knownResource.provideResourceUnits(this._carryingCapacity);
 
     if (this._knownResource.stock <= 0) {
       this._drone.hive.deleteKnownResource(this._knownResource.id);
@@ -56,7 +59,7 @@ export default class GatherActionHandler extends BaseActionHandler {
   }
 
   private _storeResource(): void {
-    this._drone.hive.addResourceUnits(this._drone.carriedResourceUnits);
-    this._drone.carriedResourceUnits = 0;
+    this._drone.hive.addResourceUnits(this._carriedResourceUnits);
+    this._carriedResourceUnits = 0;
   }
 }

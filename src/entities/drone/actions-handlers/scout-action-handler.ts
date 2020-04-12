@@ -3,7 +3,7 @@ import { findTargetInCircle } from '../../../utils';
 import Position from '../../position';
 import Resource from '../../resource';
 
-export default class ScourActionHandler extends BaseActionHandler {
+export default class ScoutActionHandler extends BaseActionHandler {
   private _detectedResource?: Resource;
   private readonly _resourceDetectionRange = 30;
 
