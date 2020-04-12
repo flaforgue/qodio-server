@@ -32,10 +32,10 @@ export default class Board {
     );
   }
 
-  public deleteKnownResource(resourceId: string): void {
+  public deleteResource(resourceId: string): void {
     for (let i = 0; i < this.resources.length; i++) {
       if (this.resources[i].id === resourceId) {
-        this.resources.splice(i, 1)[0];
+        this.resources.splice(i, 1);
         return;
       }
     }
