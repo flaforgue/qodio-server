@@ -1,14 +1,23 @@
 import { Expose, Exclude, Type } from 'class-transformer';
-import PlayerEntityDTO from './player-entity.dto';
+import BasePlayerEntityDTO from './base-player-entity.dto';
 import DroneDTO from './drone.dto';
 
 @Exclude()
-export default class HiveDTO extends PlayerEntityDTO {
+export default class HiveDTO extends BasePlayerEntityDTO {
   @Expose()
   public radius: number;
 
   @Expose()
   public territoryRadius: number;
+
+  @Expose()
+  public stock: number;
+
+  @Expose()
+  public maxStock: number;
+
+  @Expose()
+  public maxPopulation: number;
 
   @Expose()
   @Type(() => DroneDTO)
