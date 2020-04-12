@@ -44,11 +44,11 @@ io.on('connection', (socket: SocketIO.Socket) => {
       });
 
       socket.on('ping', () => {
-        console.log('ping');
+        console.info('ping');
       });
 
       socket.on('pong', () => {
-        console.log('pong');
+        console.info('pong');
       });
 
       if (game.isFull) {

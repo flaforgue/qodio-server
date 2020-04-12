@@ -1,19 +1,19 @@
 import Hive from './hive';
 import Position from './shared/position';
 import { v4 as uuidv4 } from 'uuid';
-import Board from './board';
 import Resource from './resource';
-import { randomFromArray } from '../utils';
+import { randomFromArray, removeFromArrayById } from '../utils';
+import Game from '../game';
 
 export default class Player {
-  private readonly _board: Board;
+  private readonly _game: Game;
   private _knownResources: Resource[] = [];
   public readonly hive: Hive;
   public readonly id: string;
 
-  public constructor(board: Board, position: Position) {
+  public constructor(game: Game, position: Position) {
     this.id = uuidv4();
-    this._board = board;
+    this._game = game;
     this.hive = new Hive(this, position);
   }
 
@@ -22,7 +22,7 @@ export default class Player {
   }
 
   public detectNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
-    return this._board
+    return this._game.board
       .detectResourcesIfPossible(position, detectionDistance)
       .filter((resource) => !this.doesKnowResource(resource.id));
   }
@@ -33,15 +33,12 @@ export default class Player {
     }
   }
 
-  public deleteKnownResource(resourceId: string): void {
-    this._board.deleteResource(resourceId);
+  public removeResource(resourceId: string): void {
+    this._game.removeResource(resourceId);
+  }
 
-    for (let i = 0; i < this._knownResources.length; i++) {
-      if (this._knownResources[i].id === resourceId) {
-        this._knownResources.splice(i, 1);
-        return;
-      }
-    }
+  public removeKnownResource(resourceId: string): void {
+    removeFromArrayById(this._knownResources, resourceId);
   }
 
   public doesKnowResource(resourceId: string): boolean {

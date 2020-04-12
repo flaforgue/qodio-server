@@ -1,7 +1,7 @@
 import SocketIO from 'socket.io';
 import Player from './entities/player';
 import Board from './entities/board';
-import { hrtimeMs } from './utils';
+import { hrtimeMs, removeFromArrayById } from './utils';
 import { plainToClass } from 'class-transformer';
 import GameDTO from './dtos/game.dto';
 import config from './config';
@@ -10,8 +10,6 @@ type GameState = 'stopped' | 'started';
 
 export default class Game {
   private _start: number;
-
-  private readonly _maxPlayers = 1;
   private readonly _board: Board;
   private _namespace: SocketIO.Namespace;
   private _players: Player[] = [];
@@ -89,25 +87,28 @@ export default class Game {
 
   public addPlayer(): Player {
     const position = this._board.getRandomPosition();
-    const player = new Player(this._board, position);
+    const player = new Player(this, position);
     this._players.push(player);
 
-    console.info(`Player ${player.id} joined (${this._players.length}/${this._maxPlayers})`);
+    console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
 
     return player;
   }
 
   public get isFull(): boolean {
-    return this.players.length >= this._maxPlayers;
+    return this.players.length >= config.nbPlayers;
   }
 
   public removePlayer(playerId: string): void {
+    console.info(`Player ${playerId} left (${this._players.length}/${config.nbPlayers})`);
+    removeFromArrayById(this._players, playerId);
+  }
+
+  public removeResource(resourceId: string): void {
+    this._board.removeResource(resourceId);
+
     for (let i = 0; i < this._players.length; i++) {
-      if (this._players[i].id === playerId) {
-        this._players.splice(i, 1);
-        console.info(`Player ${playerId} left (${this._players.length}/${this._maxPlayers})`);
-        return;
-      }
+      this._players[i].removeKnownResource(resourceId);
     }
   }
 }

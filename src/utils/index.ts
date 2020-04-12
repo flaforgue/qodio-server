@@ -31,4 +31,19 @@ const hrtimeMs = (): number => {
   return time[0] * 1000 + time[1] / 1000000;
 };
 
-export { handleException, isNear, findTargetInCircle, randomFromArray, hrtimeMs };
+const removeFromArrayById = (arr: { id: string }[], id: string): { id: string }[] => {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].id === id) {
+      return arr.splice(i, 1);
+    }
+  }
+};
+
+export {
+  handleException,
+  isNear,
+  findTargetInCircle,
+  randomFromArray,
+  hrtimeMs,
+  removeFromArrayById,
+};

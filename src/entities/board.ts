@@ -1,6 +1,6 @@
 import Resource from './resource';
 import Position from './shared/position';
-import { isNear } from '../utils';
+import { isNear, removeFromArrayById } from '../utils';
 
 const resourceConcentration = 0.00005; // resource per pixels square
 
@@ -32,12 +32,7 @@ export default class Board {
     );
   }
 
-  public deleteResource(resourceId: string): void {
-    for (let i = 0; i < this.resources.length; i++) {
-      if (this.resources[i].id === resourceId) {
-        this.resources.splice(i, 1);
-        return;
-      }
-    }
+  public removeResource(resourceId: string): void {
+    removeFromArrayById(this.resources, resourceId);
   }
 }

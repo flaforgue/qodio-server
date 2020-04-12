@@ -54,7 +54,7 @@ export default class GatherActionHandler extends BaseActionHandler {
     this._carriedResourceUnits = this._knownResource.provideResourceUnits(this._carryingCapacity);
 
     if (this._knownResource.stock <= 0) {
-      this._drone.hive.deleteKnownResource(this._knownResource.id);
+      this._drone.hive.removeResource(this._knownResource.id);
     }
   }
 

@@ -8,11 +8,7 @@ export default class ScoutActionHandler extends BaseActionHandler {
   private readonly _resourceDetectionRange = 30;
 
   public handle(): boolean {
-    // forget resources discovered by other scouts
-    if (this._detectedResource && this._drone.hive.doesKnowResource(this._detectedResource.id)) {
-      this._detectedResource = null;
-      this._drone.target = null;
-    }
+    this._forgetDetectedResourceIfInvalid();
 
     if (!this._drone.target) {
       this._drone.target = this._detectedResource?.position ?? this._findRandomTargetInTerritory();
@@ -29,6 +25,18 @@ export default class ScoutActionHandler extends BaseActionHandler {
     }
 
     return true;
+  }
+
+  private _forgetDetectedResourceIfInvalid(): void {
+    if (this._detectedResource) {
+      const isResourceEmpty = this._detectedResource.stock <= 0;
+      const isResourceAlreadyKnown = this._drone.hive.doesKnowResource(this._detectedResource.id);
+
+      if (isResourceEmpty || isResourceAlreadyKnown) {
+        this._detectedResource = null;
+        this._drone.target = null;
+      }
+    }
   }
 
   private _findRandomTargetInTerritory(): Position {

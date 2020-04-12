@@ -61,8 +61,8 @@ export default class Hive extends BasePlayerEntity {
     this._player.addKnownResource(resource);
   }
 
-  public deleteKnownResource(resourceId: string): void {
-    this._player.deleteKnownResource(resourceId);
+  public removeResource(resourceId: string): void {
+    this._player.removeResource(resourceId);
   }
 
   public getKnownResource(): Resource | null {
