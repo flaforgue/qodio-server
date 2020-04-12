@@ -1,12 +1,11 @@
 import Position from './position';
-import Entity from './entity';
+import BaseEntity from './base-entity';
 
-export default class PlayerEntity extends Entity {
+export default class BasePlayerEntity extends BaseEntity {
   protected readonly playerId: string;
 
   public constructor(playerId: string, position: Position) {
     super(position);
-
     this.playerId = playerId;
   }
 }
