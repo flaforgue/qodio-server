@@ -1,7 +1,7 @@
-import Entity from './entity';
+import BaseEntity from './base-entity';
 import Position from './position';
 
-export default class Resource extends Entity {
+export default class Resource extends BaseEntity {
   private _stock: number;
   public readonly initialStock: number;
 
