@@ -34,11 +34,11 @@ export default class Player {
   }
 
   public deleteKnownResource(resourceId: string): void {
-    this._board.deleteKnownResource(resourceId);
+    this._board.deleteResource(resourceId);
 
     for (let i = 0; i < this._knownResources.length; i++) {
       if (this._knownResources[i].id === resourceId) {
-        this._knownResources.splice(i, 1)[0];
+        this._knownResources.splice(i, 1);
         return;
       }
     }
