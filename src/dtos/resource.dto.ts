@@ -1,8 +1,8 @@
 import { Expose, Exclude } from 'class-transformer';
-import EntityDTO from './entity.dto';
+import BaseEntityDTO from './base-entity.dto';
 
 @Exclude()
-export default class ResourceDTO extends EntityDTO {
+export default class ResourceDTO extends BaseEntityDTO {
   @Expose()
   public initialStock: number;
 
