@@ -2,7 +2,7 @@ import Resource from './resource';
 import Position from './shared/position';
 import { isNear, removeFromArrayById } from '../utils';
 
-const resourceConcentration = 0.00002; // resource per pixels square
+const resourceConcentration = 0.000005; // resource per pixels square
 
 export default class Board {
   public readonly width: number;
@@ -21,8 +21,8 @@ export default class Board {
     }
   }
 
-  public createResource(position: Position): void {
-    const initialResource = Math.floor(Math.random() * 70) + 30;
+  public createResource(position: Position, initialStock?: number): void {
+    const initialResource = initialStock ?? Math.floor(Math.random() * 250) + 250;
     this.resources.push(new Resource(position, initialResource));
   }
 

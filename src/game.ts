@@ -95,6 +95,7 @@ export default class Game {
 
     this._board.createResource(
       new Position(player.hive.position.x + 100, player.hive.position.y + 100),
+      500,
     );
 
     return player;
