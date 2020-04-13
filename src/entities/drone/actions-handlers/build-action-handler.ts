@@ -5,7 +5,7 @@ const buildingRange = 30;
 
 export default class BuildActionHandler extends BaseActionHandler {
   private _buildingRequest: BuildingRequest = null;
-  private _buildingCapacity = 0.02;
+  private _buildingCapacity = 0.05;
   private _isBuilding = false;
 
   public handle(): boolean {

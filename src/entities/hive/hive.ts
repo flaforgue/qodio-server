@@ -20,19 +20,19 @@ export default class Hive extends BasePlayerEntity {
     super(player.id, position);
     this._player = player;
 
-    for (let i = 0; i < 0; i++) {
+    for (let i = 0; i < 1; i++) {
       this.addDrone('wait');
     }
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       this.addDrone('scout');
     }
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       this.addDrone('collect');
     }
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       this.addDrone('build');
     }
   }
@@ -54,7 +54,7 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public get maxPopulation(): number {
-    return 100 * this._level;
+    return 150 * this._level;
   }
 
   public get maxStock(): number {
