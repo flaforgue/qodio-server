@@ -1,5 +1,5 @@
 import { Expose, Exclude } from 'class-transformer';
-import BaseEntityDTO from './base-entity.dto';
+import BaseEntityDTO from './shared/base-entity.dto';
 
 @Exclude()
 export default class ResourceDTO extends BaseEntityDTO {

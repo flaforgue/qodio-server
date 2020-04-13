@@ -8,4 +8,5 @@ export default abstract class BaseActionHandler {
   }
 
   public abstract handle(): boolean;
+  public reset(): void {}
 }

@@ -1,6 +1,5 @@
 import { Expose, Exclude, Type } from 'class-transformer';
-import HiveDTO from './hive.dto';
-import ResourceDTO from './resource.dto';
+import HiveDTO from './hive/hive.dto';
 
 @Exclude()
 export default class PlayerDTO {
@@ -10,8 +9,4 @@ export default class PlayerDTO {
 
   @Expose()
   public id: string;
-
-  @Expose()
-  @Type(() => ResourceDTO)
-  public knownResources: ResourceDTO[];
 }

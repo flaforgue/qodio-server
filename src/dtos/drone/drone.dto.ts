@@ -1,5 +1,5 @@
 import { Expose, Exclude } from 'class-transformer';
-import BasePlayerEntityDTO from './base-player-entity.dto';
+import BasePlayerEntityDTO from '../shared/base-player-entity.dto';
 
 @Exclude()
 export default class DroneDTO extends BasePlayerEntityDTO {

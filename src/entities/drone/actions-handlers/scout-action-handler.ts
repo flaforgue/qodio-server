@@ -4,7 +4,7 @@ import Position from '../../shared/position';
 import Resource from '../../resource';
 
 export default class ScoutActionHandler extends BaseActionHandler {
-  private _detectedResource?: Resource;
+  private _detectedResource: Resource;
   private readonly _resourceDetectionRange = 30;
 
   public handle(): boolean {
@@ -14,7 +14,7 @@ export default class ScoutActionHandler extends BaseActionHandler {
       this._drone.target = this._detectedResource?.position ?? this._findRandomTargetInTerritory();
     }
 
-    if (this._drone.isOnTarget()) {
+    if (this._drone.isNearFromTarget) {
       this._handleTargetReached();
     } else {
       this._drone.moveToTarget();

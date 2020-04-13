@@ -8,7 +8,7 @@ export default class BaseEntity {
 
   public constructor(position: Position) {
     this.id = uuidv4();
-    this._position = { ...position };
+    this._position = new Position(position.x, position.y);
   }
 
   public get position(): Position {

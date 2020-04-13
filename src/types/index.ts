@@ -1,4 +1,4 @@
-export type DroneAction = 'wait' | 'scout' | 'gather';
+export type DroneAction = 'wait' | 'scout' | 'collect' | 'build';
 
 export type Axis = 'x' | 'y';
 
@@ -11,3 +11,5 @@ export type Direction =
   | 'downleft'
   | 'left'
   | 'upleft';
+
+export type BuildingType = 'collector';

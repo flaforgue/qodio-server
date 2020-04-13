@@ -1,16 +1,19 @@
 import BasePlayerEntity from '../shared/player-entity';
 import Position from '../shared/position';
-import { DroneAction, Direction } from '../../types/qodio-server';
-import Hive from '../hive';
+import { DroneAction, Direction } from '../../types';
+import Hive from '../hive/hive';
 import WaitActionHandler from './actions-handlers/wait-action-handler';
 import ScoutActionHandler from './actions-handlers/scout-action-handler';
-import GatherActionHandler from './actions-handlers/gather-action-handler';
+import CollectActionHandler from './actions-handlers/collect-action-handler';
 import BaseActionHandler from './actions-handlers/base-action-handler';
 import config from '../../config';
+import BuildActionHandler from './actions-handlers/build-action-handler';
+import { findTargetInCircle } from '../../utils';
 
 export default class Drone extends BasePlayerEntity {
-  public target?: Position;
   private readonly _hive: Hive;
+  private _target: Position;
+  private _isNearFromTarget: boolean;
   private _direction: Direction;
   private _action: DroneAction;
   private _actionsHandlers: Record<DroneAction, BaseActionHandler>;
@@ -19,11 +22,13 @@ export default class Drone extends BasePlayerEntity {
     super(playerId, hive.position);
     this._hive = hive;
     this._action = action;
+    this._direction = 'up';
 
     this._actionsHandlers = {
       wait: new WaitActionHandler(this),
       scout: new ScoutActionHandler(this),
-      gather: new GatherActionHandler(this),
+      collect: new CollectActionHandler(this),
+      build: new BuildActionHandler(this),
     };
   }
 
@@ -35,12 +40,31 @@ export default class Drone extends BasePlayerEntity {
     return this._action;
   }
 
+  public set action(action: DroneAction) {
+    this.target = null;
+    this._actionsHandlers.build.reset();
+    this._action = action;
+  }
+
   public get direction(): Direction {
     return this._direction;
   }
 
   public get carriedResourceUnits(): number {
-    return (this._actionsHandlers.gather as GatherActionHandler).carriedResourceUnits;
+    return (this._actionsHandlers.collect as CollectActionHandler).carriedResourceUnits;
+  }
+
+  public get isNearFromTarget(): boolean {
+    return this._isNearFromTarget;
+  }
+
+  public get target(): Position {
+    return this._target;
+  }
+
+  public set target(position: Position) {
+    this._target = position;
+    this._isNearFromTarget = false;
   }
 
   public update(): void {
@@ -48,8 +72,11 @@ export default class Drone extends BasePlayerEntity {
       case 'scout':
         this._actionsHandlers.scout.handle();
         break;
-      case 'gather':
-        this._actionsHandlers.gather.handle() || this._actionsHandlers.wait.handle();
+      case 'collect':
+        this._actionsHandlers.collect.handle() || this._actionsHandlers.wait.handle();
+        break;
+      case 'build':
+        this._actionsHandlers.build.handle() || this._actionsHandlers.wait.handle();
         break;
       case 'wait':
       default:
@@ -58,31 +85,37 @@ export default class Drone extends BasePlayerEntity {
     }
   }
 
-  public isOnTarget(): boolean {
-    return this.target ? this.isNear(this.target, config.step) : false;
+  public moveAroundPosition(position: Position, maxDistance: number): void {
+    if (!this._target || this._isNearFromTarget) {
+      this.target = findTargetInCircle(position, maxDistance);
+    }
+
+    this.moveToTarget();
   }
 
   public moveToTarget(): void {
-    const moveDirection = this._getMoveDirection();
+    if (this._target) {
+      this._isNearFromTarget = this.isNear(this._target, config.step);
 
-    if (moveDirection) {
-      this._direction = moveDirection;
-      this._moveIntoDirection();
+      if (!this._isNearFromTarget) {
+        this._direction = this._getMoveDirection();
+        this._moveIntoDirection();
+      }
     }
   }
 
   private _getMoveDirection(): Direction {
     let direction = '';
 
-    if (this._position.y > this.target.y) {
+    if (this._position.y > this._target.y) {
       direction += 'up';
-    } else if (this._position.y < this.target.y) {
+    } else if (this._position.y < this._target.y) {
       direction += 'down';
     }
 
-    if (this._position.x > this.target.x) {
+    if (this._position.x > this._target.x) {
       direction += 'left';
-    } else if (this._position.x < this.target.x) {
+    } else if (this._position.x < this._target.x) {
       direction += 'right';
     }
 

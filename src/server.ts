@@ -29,6 +29,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
       socket.emit('game.create', plainToClass(GameDTO, game));
 
       const player = game.addPlayer();
+
       socket.emit('self.create', plainToClass(PlayerDTO, player));
 
       socket.on('disconnect', (reason) => {
@@ -55,7 +56,9 @@ io.on('connection', (socket: SocketIO.Socket) => {
         game.startGameLoop(io.sockets);
       }
     } else {
-      throw new GameIsFullException();
+      // throw new GameIsFullException();
+      // testing only
+      game.players.splice(0, game.players.length);
     }
   } catch (e) {
     handleException(e);

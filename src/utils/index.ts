@@ -39,6 +39,10 @@ const removeFromArrayById = (arr: { id: string }[], id: string): { id: string }[
   }
 };
 
+const existsInArrayById = (arr: { id: string }[], id: string): boolean => {
+  return arr.some((elem) => elem.id === id);
+};
+
 export {
   handleException,
   isNear,
@@ -46,4 +50,5 @@ export {
   randomFromArray,
   hrtimeMs,
   removeFromArrayById,
+  existsInArrayById,
 };

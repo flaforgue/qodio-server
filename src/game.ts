@@ -5,6 +5,7 @@ import { hrtimeMs, removeFromArrayById } from './utils';
 import { plainToClass } from 'class-transformer';
 import GameDTO from './dtos/game.dto';
 import config from './config';
+import Position from './entities/shared/position';
 
 type GameState = 'stopped' | 'started';
 
@@ -86,11 +87,15 @@ export default class Game {
   }
 
   public addPlayer(): Player {
-    const position = this._board.getRandomPosition();
+    // const position = this._board.getRandomPosition();
+    const position = new Position(400, 300);
     const player = new Player(this, position);
     this._players.push(player);
-
     console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
+
+    this._board.createResource(
+      new Position(player.hive.position.x + 100, player.hive.position.y + 100),
+    );
 
     return player;
   }
@@ -106,9 +111,5 @@ export default class Game {
 
   public removeResource(resourceId: string): void {
     this._board.removeResource(resourceId);
-
-    for (let i = 0; i < this._players.length; i++) {
-      this._players[i].removeKnownResource(resourceId);
-    }
   }
 }

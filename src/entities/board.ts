@@ -2,7 +2,7 @@ import Resource from './resource';
 import Position from './shared/position';
 import { isNear, removeFromArrayById } from '../utils';
 
-const resourceConcentration = 0.00005; // resource per pixels square
+const resourceConcentration = 0.00002; // resource per pixels square
 
 export default class Board {
   public readonly width: number;
@@ -17,9 +17,13 @@ export default class Board {
 
   private _generateResources(nbToGenerate: number): void {
     for (let i = 0; i < nbToGenerate; i++) {
-      const initialResource = Math.floor(Math.random() * 70) + 30;
-      this.resources.push(new Resource(this.getRandomPosition(), initialResource));
+      this.createResource(this.getRandomPosition());
     }
+  }
+
+  public createResource(position: Position): void {
+    const initialResource = Math.floor(Math.random() * 70) + 30;
+    this.resources.push(new Resource(position, initialResource));
   }
 
   public getRandomPosition(): Position {
