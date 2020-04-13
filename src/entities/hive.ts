@@ -6,6 +6,7 @@ import Resource from './resource';
 import Player from './player';
 
 export default class Hive extends BasePlayerEntity {
+  private _level = 1;
   private _stock = 0;
   private _drones: Drone[] = [];
   private readonly _player: Player;
@@ -14,25 +15,29 @@ export default class Hive extends BasePlayerEntity {
     super(player.id, position);
     this._player = player;
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
       this.addDrone('scout');
     }
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
       this.addDrone('gather');
     }
   }
 
+  public get level(): number {
+    return this._level;
+  }
+
   public get maxPopulation(): number {
-    return 200;
+    return 100 * this._level;
   }
 
   public get maxStock(): number {
-    return 1000;
+    return 1000 * this._level;
   }
 
   public get radius(): number {
-    return 50;
+    return 150 + 25 * this._level;
   }
 
   public get territoryRadius(): number {
