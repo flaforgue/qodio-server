@@ -4,9 +4,8 @@ import * as http from 'http';
 import express from 'express';
 import Game from './game';
 import { plainToClass } from 'class-transformer';
-import PlayerDTO from './dtos/player.dto';
-import GameDTO from './dtos/game.dto';
-// import GameIsFullException from './exceptions/game-is-full.exception';
+import { PlayerDTO, GameDTO } from './dtos';
+// import GameIsFullException from './exceptions';
 import { handleException } from './utils';
 import { bindSystemEvents, bindPlayerEvents } from './events';
 

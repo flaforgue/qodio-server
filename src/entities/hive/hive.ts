@@ -6,10 +6,18 @@ import Resource from '../resource';
 import Player from '../player';
 import BuildingRequest from './building-request';
 import { removeFromArrayById, randomFromArray, existsInArrayById } from '../../utils';
+import { droneActions } from '../../enums';
 
 const droneResourceCost = 10;
 
 export default class Hive extends BasePlayerEntity {
+  public actionsNbDrones: Record<DroneAction, number> = {
+    wait: 0,
+    scout: 0,
+    collect: 0,
+    build: 0,
+  };
+
   private _level = 1;
   private _stock = 100;
   private _drones: Drone[] = [];
@@ -23,10 +31,10 @@ export default class Hive extends BasePlayerEntity {
     this._player = player;
 
     const initialDrones: { action: DroneAction; nbDrones: number }[] = [
-      { action: 'wait', nbDrones: 1 },
-      { action: 'scout', nbDrones: 5 },
-      { action: 'collect', nbDrones: 5 },
-      { action: 'build', nbDrones: 3 },
+      { action: 'wait', nbDrones: 5 },
+      { action: 'scout', nbDrones: 0 },
+      { action: 'collect', nbDrones: 0 },
+      { action: 'build', nbDrones: 0 },
     ];
 
     for (let i = 0; i < initialDrones.length; i++) {
@@ -76,11 +84,55 @@ export default class Hive extends BasePlayerEntity {
     return this._drones;
   }
 
+  public update(): void {
+    for (let i = 0; i < droneActions.length; i++) {
+      this.actionsNbDrones[droneActions[i]] = 0;
+    }
+
+    for (let i = 0; i < this.drones.length; i++) {
+      this._drones[i].update();
+      this.actionsNbDrones[this._drones[i].action]++;
+    }
+  }
+
   public addDrone(action?: DroneAction): void {
     if (this._drones.length < this.maxPopulation && this.stock >= droneResourceCost) {
       this.removeResourceUnits(droneResourceCost);
       this._drones.push(new Drone(this.playerId, this, action));
     }
+  }
+
+  public recycleDrone(): void {
+    const droneToRecycle = this._getEngagedDrone('wait');
+
+    if (droneToRecycle) {
+      removeFromArrayById(this._drones, droneToRecycle.id);
+      this.addResourceUnits(droneResourceCost);
+    }
+  }
+
+  public engageDrone(action: DroneAction): void {
+    const waitingDrone = this._getEngagedDrone('wait');
+    if (waitingDrone) {
+      waitingDrone.action = action;
+    }
+  }
+
+  public disengageDrone(action: DroneAction): void {
+    const engagedDrone = this._getEngagedDrone(action);
+    if (engagedDrone) {
+      engagedDrone.action = 'wait';
+    }
+  }
+
+  private _getEngagedDrone(action: DroneAction): Drone | null {
+    for (let i = 0; i < this._drones.length; i++) {
+      if (this._drones[i].action === action) {
+        return this._drones[i];
+      }
+    }
+
+    return null;
   }
 
   // Warning: the Hive is here considered as a square to improve performances

@@ -2,13 +2,13 @@ import BasePlayerEntity from '../shared/player-entity';
 import Position from '../shared/position';
 import { DroneAction, Direction } from '../../types';
 import Hive from '../hive/hive';
-import WaitActionHandler from './actions-handlers/wait-action-handler';
-import ScoutActionHandler from './actions-handlers/scout-action-handler';
-import CollectActionHandler from './actions-handlers/collect-action-handler';
-import BaseActionHandler from './actions-handlers/base-action-handler';
+import { WaitActionHandler } from './actions-handlers';
+import { ScoutActionHandler } from './actions-handlers';
+import { CollectActionHandler } from './actions-handlers';
+import { BaseActionHandler } from './actions-handlers';
 import config from '../../config';
-import BuildActionHandler from './actions-handlers/build-action-handler';
-import { findTargetInCircle } from '../../utils';
+import { BuildActionHandler } from './actions-handlers';
+import { findPositionInCircle } from '../../utils';
 
 export default class Drone extends BasePlayerEntity {
   private readonly _hive: Hive;
@@ -40,10 +40,10 @@ export default class Drone extends BasePlayerEntity {
     return this._action;
   }
 
-  public set action(action: DroneAction) {
+  public set action(newAction: DroneAction) {
     this.target = null;
-    this._actionsHandlers.build.reset();
-    this._action = action;
+    this._actionsHandlers[this._action].reset();
+    this._action = newAction;
   }
 
   public get direction(): Direction {
@@ -87,7 +87,7 @@ export default class Drone extends BasePlayerEntity {
 
   public moveAroundPosition(position: Position, maxDistance: number): void {
     if (!this._target || this._isNearFromTarget) {
-      this.target = findTargetInCircle(position, maxDistance);
+      this.target = findPositionInCircle(position, maxDistance);
     }
 
     this.moveToTarget();

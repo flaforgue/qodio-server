@@ -1,11 +1,9 @@
 import SocketIO from 'socket.io';
-import Player from './entities/player';
-import Board from './entities/board';
+import { Player, Board, Position } from './entities';
 import { hrtimeMs, removeFromArrayById } from './utils';
 import { plainToClass } from 'class-transformer';
-import GameDTO from './dtos/game.dto';
+import { GameDTO } from './dtos';
 import config from './config';
-import Position from './entities/shared/position';
 
 type GameState = 'stopped' | 'started';
 
@@ -39,11 +37,9 @@ export default class Game {
   }
 
   private _update(): void {
-    this.players.forEach((player) => {
-      player.hive.drones.forEach((drone) => {
-        drone.update();
-      });
-    });
+    for (let i = 0; i < this._players.length; i++) {
+      this._players[i].hive.update();
+    }
   }
 
   private _emit(): void {
@@ -78,15 +74,13 @@ export default class Game {
   }
 
   public stopGameLoop(): void {
-    if (this._state === 'started') {
+    if (this._state !== 'stopped') {
       console.info('Game loop stopping');
       clearImmediate(this._currentTickReference);
       clearTimeout(this._currentTickReference);
       this._namespace.emit('game.stop');
       this._state = 'stopped';
       console.info('Game loop stopped');
-    } else {
-      throw new Error('not started');
     }
   }
 

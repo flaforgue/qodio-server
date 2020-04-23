@@ -2,6 +2,7 @@ import Hive from './hive/hive';
 import Position from './shared/position';
 import { v4 as uuidv4 } from 'uuid';
 import Game from '../game';
+import { DroneAction } from '../types';
 
 export default class Player {
   public readonly game: Game;
@@ -16,5 +17,17 @@ export default class Player {
 
   public addDrone(): void {
     this.hive.addDrone();
+  }
+
+  public recycleDrone(): void {
+    this.hive.recycleDrone();
+  }
+
+  public engageDrone(action: DroneAction): void {
+    this.hive.engageDrone(action);
+  }
+
+  public disengageDrone(action: DroneAction): void {
+    this.hive.disengageDrone(action);
   }
 }

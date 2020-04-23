@@ -8,6 +8,11 @@ export default class BuildActionHandler extends BaseActionHandler {
   private _buildingCapacity = 0.05;
   private _isBuilding = false;
 
+  public reset(): void {
+    this._isBuilding = false;
+    this._buildingRequest = null;
+  }
+
   public handle(): boolean {
     if (!this._buildingRequest) {
       this._buildingRequest = this._drone.hive.getNextBuildingRequest();
@@ -33,10 +38,6 @@ export default class BuildActionHandler extends BaseActionHandler {
     }
 
     return true;
-  }
-
-  public reset(): void {
-    this._isBuilding = false;
   }
 
   private _forgetBuildingRequest(): boolean {

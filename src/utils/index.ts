@@ -1,52 +1,15 @@
-import Position from '../entities/shared/position';
-import BaseException from '../exceptions/base.exception';
-
-const handleException = (exception: unknown): void => {
-  if (exception instanceof BaseException) {
-    console.warn(exception.message);
-  } else {
-    throw exception;
-  }
-};
-
-const isNear = (position: Position, target: Position, precision = 1): boolean => {
-  return (
-    Math.abs(position.x - target.x) <= precision && Math.abs(position.y - target.y) <= precision
-  );
-};
-
-const findTargetInCircle = (center: Position, radius: number): Position => {
-  const r = Math.random() * radius;
-  const theta = Math.random() * 2 * Math.PI;
-
-  return new Position(center.x + r * Math.cos(theta), center.y + r * Math.sin(theta));
-};
-
-const randomFromArray = <T>(arr: T[]): T => {
-  return arr[Math.floor(Math.random() * arr.length)];
-};
-
-const hrtimeMs = (): number => {
-  const time = process.hrtime();
-  return time[0] * 1000 + time[1] / 1000000;
-};
-
-const removeFromArrayById = (arr: { id: string }[], id: string): { id: string }[] => {
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].id === id) {
-      return arr.splice(i, 1);
-    }
-  }
-};
-
-const existsInArrayById = (arr: { id: string }[], id: string): boolean => {
-  return arr.some((elem) => elem.id === id);
-};
+import handleException from './handle-exception';
+import isNear from './positions/is-near';
+import findPositionInCircle from './positions/find-position-in-circle';
+import randomFromArray from './arrays/random-from-array';
+import removeFromArrayById from './arrays/remove-from-array-by-id';
+import existsInArrayById from './arrays/exists-in-array-by-id';
+import hrtimeMs from './hrtime-ms';
 
 export {
   handleException,
   isNear,
-  findTargetInCircle,
+  findPositionInCircle,
   randomFromArray,
   hrtimeMs,
   removeFromArrayById,
