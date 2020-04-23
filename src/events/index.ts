@@ -26,5 +26,6 @@ export const bindSystemEvents = (socket: Socket, game: Game, player: Player): vo
 export const bindPlayerEvents = (socket: Socket, player: Player): void => {
   socket.on('drone.create', () => {
     player.addDrone();
+    socket.emit('drone.created');
   });
 };
