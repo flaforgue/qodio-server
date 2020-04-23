@@ -2,7 +2,7 @@ import Resource from './resource';
 import Position from './shared/position';
 import { isNear, removeFromArrayById } from '../utils';
 
-const resourceConcentration = 0.000005; // resource per pixels square
+const resourceConcentration = 0.00002; // resource per pixels square
 
 export default class Board {
   public readonly width: number;
