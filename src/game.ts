@@ -34,6 +34,10 @@ export default class Game {
     return this._start;
   }
 
+  public get state(): GameState {
+    return this._state;
+  }
+
   private _update(): void {
     this.players.forEach((player) => {
       player.hive.drones.forEach((drone) => {

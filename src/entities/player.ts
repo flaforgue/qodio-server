@@ -13,4 +13,8 @@ export default class Player {
     this.game = game;
     this.hive = new Hive(this, position);
   }
+
+  public addDrone(): void {
+    this.hive.addDrone();
+  }
 }

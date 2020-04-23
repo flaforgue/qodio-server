@@ -7,6 +7,8 @@ import Player from '../player';
 import BuildingRequest from './building-request';
 import { removeFromArrayById, randomFromArray, existsInArrayById } from '../../utils';
 
+const droneResourceCost = 10;
+
 export default class Hive extends BasePlayerEntity {
   private _level = 1;
   private _stock = 100;
@@ -20,20 +22,17 @@ export default class Hive extends BasePlayerEntity {
     super(player.id, position);
     this._player = player;
 
-    for (let i = 0; i < 1; i++) {
-      this.addDrone('wait');
-    }
+    const initialDrones: { action: DroneAction; nbDrones: number }[] = [
+      { action: 'wait', nbDrones: 1 },
+      { action: 'scout', nbDrones: 5 },
+      { action: 'collect', nbDrones: 5 },
+      { action: 'build', nbDrones: 3 },
+    ];
 
-    for (let i = 0; i < 5; i++) {
-      this.addDrone('scout');
-    }
-
-    for (let i = 0; i < 20; i++) {
-      this.addDrone('collect');
-    }
-
-    for (let i = 0; i < 5; i++) {
-      this.addDrone('build');
+    for (let i = 0; i < initialDrones.length; i++) {
+      for (let j = 0; j < initialDrones[i].nbDrones; j++) {
+        this._drones.push(new Drone(this.playerId, this, initialDrones[i].action));
+      }
     }
   }
 
@@ -54,7 +53,7 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public get maxPopulation(): number {
-    return 150 * this._level;
+    return 50 * this._level;
   }
 
   public get maxStock(): number {
@@ -78,7 +77,8 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public addDrone(action?: DroneAction): void {
-    if (this._drones.length < this.maxPopulation) {
+    if (this._drones.length < this.maxPopulation && this.stock >= droneResourceCost) {
+      this.removeResourceUnits(droneResourceCost);
       this._drones.push(new Drone(this.playerId, this, action));
     }
   }
@@ -99,6 +99,14 @@ export default class Hive extends BasePlayerEntity {
     if (this._stock > this.maxStock) {
       this._stock = this.maxStock;
     }
+
+    if (this._stock < 0) {
+      this._stock = 0;
+    }
+  }
+
+  public removeResourceUnits(amount: number): void {
+    this.addResourceUnits(amount * -1);
   }
 
   public doesKnowResource(resourceId: string): boolean {

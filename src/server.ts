@@ -1,13 +1,14 @@
 import 'reflect-metadata';
-import SocketIO from 'socket.io';
+import SocketIO, { Socket } from 'socket.io';
 import * as http from 'http';
 import express from 'express';
 import Game from './game';
 import { plainToClass } from 'class-transformer';
 import PlayerDTO from './dtos/player.dto';
 import GameDTO from './dtos/game.dto';
-import GameIsFullException from './exceptions/game-is-full.exception';
+// import GameIsFullException from './exceptions/game-is-full.exception';
 import { handleException } from './utils';
+import { bindSystemEvents, bindPlayerEvents } from './events';
 
 const port = process.env.PORT ?? 3000;
 const app = express();
@@ -20,37 +21,18 @@ io.on('connection', (socket: SocketIO.Socket) => {
   console.info('New connection');
 
   try {
-    if (!game) {
+    if (!game || game.state === 'stopped') {
       console.info('New game created');
       game = new Game();
     }
 
     if (!game.isFull) {
       socket.emit('game.create', plainToClass(GameDTO, game));
-
       const player = game.addPlayer();
-
       socket.emit('self.create', plainToClass(PlayerDTO, player));
 
-      socket.on('disconnect', (reason) => {
-        if (game && game.state === 'started') {
-          console.warn(
-            `Player disconnected: ${reason}, after ${(Date.now() - game.start) / 1000}s`,
-          );
-          game.removePlayer(player.id);
-          socket.broadcast.emit('player.delete', plainToClass(PlayerDTO, player));
-          game.stopGameLoop();
-          game = null;
-        }
-      });
-
-      socket.on('ping', () => {
-        console.info('ping');
-      });
-
-      socket.on('pong', () => {
-        console.info('pong');
-      });
+      bindSystemEvents(socket, game, player);
+      bindPlayerEvents(socket, player);
 
       if (game.isFull) {
         game.startGameLoop(io.sockets);
