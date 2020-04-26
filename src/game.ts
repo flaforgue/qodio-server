@@ -17,7 +17,7 @@ export default class Game {
   private _state: GameState = 'stopped';
 
   public constructor() {
-    this._board = new Board();
+    this._board = new Board(config.boardWidth, config.boardHeight);
   }
 
   public get board(): Board {

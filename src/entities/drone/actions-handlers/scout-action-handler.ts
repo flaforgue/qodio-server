@@ -1,7 +1,8 @@
 import BaseActionHandler from './base-action-handler';
-import { findPositionInCircle } from '../../../utils';
+import { findPositionInCircle, isInSquare, isInBoard } from '../../../utils';
 import Position from '../../shared/position';
 import Resource from '../../resource';
+import config from '../../../config';
 
 export default class ScoutActionHandler extends BaseActionHandler {
   private _detectedResource: Resource;
@@ -44,7 +45,12 @@ export default class ScoutActionHandler extends BaseActionHandler {
   }
 
   private _findRandomTargetInTerritory(): Position {
-    return findPositionInCircle(this._drone.hive.position, this._drone.hive.territoryRadius);
+    let newTarget;
+    do {
+      newTarget = findPositionInCircle(this._drone.hive.position, this._drone.hive.territoryRadius);
+    } while (!isInBoard(newTarget));
+
+    return newTarget;
   }
 
   private _detectNewResourcesInRange(): Resource[] {

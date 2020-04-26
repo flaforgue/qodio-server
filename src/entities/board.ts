@@ -9,7 +9,7 @@ export default class Board {
   public readonly height: number;
   public readonly resources: Resource[] = [];
 
-  public constructor(width = 2400, height = 1200) {
+  public constructor(width, height) {
     this.width = width;
     this.height = height;
     this._generateResources(Math.floor(this.width * this.height * resourceConcentration));
