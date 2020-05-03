@@ -30,4 +30,8 @@ export default class Player {
   public disengageDrone(action: DroneAction): void {
     this.hive.disengageDrone(action);
   }
+
+  public addBuildingRequest(resourceId: string): void {
+    this.hive.addBuildingRequest(resourceId);
+  }
 }

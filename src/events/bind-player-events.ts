@@ -14,12 +14,17 @@ export default (socket: Socket, player: Player): void => {
   });
 
   socket.on('drone.engage', (action: DroneAction) => {
-    console.log('drone.engage', action);
     player.engageDrone(action);
+    socket.emit('drone.engaged', action);
   });
 
   socket.on('drone.disengage', (action: DroneAction) => {
-    console.log('drone.disengage', action);
     player.disengageDrone(action);
+    socket.emit('drone.disengaged', action);
+  });
+
+  socket.on('building.create', (knownResourceId: string) => {
+    player.addBuildingRequest(knownResourceId);
+    socket.emit('building.created', knownResourceId);
   });
 };

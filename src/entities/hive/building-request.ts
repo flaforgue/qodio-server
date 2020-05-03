@@ -9,8 +9,8 @@ export default class BuildingRequest extends BaseEntity {
 
   public constructor(resource: Resource) {
     super(resource.position);
-    this.resource = resource;
     this._type = 'collector';
+    this.resource = resource;
   }
 
   public get progress(): number {

@@ -9,6 +9,7 @@ import { removeFromArrayById, randomFromArray, existsInArrayById } from '../../u
 import { droneActions } from '../../enums';
 
 const droneResourceCost = 10;
+const buildingResourceCost = 30;
 
 export default class Hive extends BasePlayerEntity {
   public actionsNbDrones: Record<DroneAction, number> = {
@@ -25,13 +26,14 @@ export default class Hive extends BasePlayerEntity {
   private _buildingRequests: BuildingRequest[] = [];
   private _knownResources: Resource[] = [];
   private _collectors: Resource[] = [];
+  private _nbResourcesDiscovered = 0;
 
   public constructor(player: Player, position: Position) {
     super(player.id, position);
     this._player = player;
 
     const initialDrones: { action: DroneAction; nbDrones: number }[] = [
-      { action: 'wait', nbDrones: 5 },
+      { action: 'wait', nbDrones: 10 },
       { action: 'scout', nbDrones: 0 },
       { action: 'collect', nbDrones: 0 },
       { action: 'build', nbDrones: 0 },
@@ -60,6 +62,10 @@ export default class Hive extends BasePlayerEntity {
     return this._collectors;
   }
 
+  public get nbResourcesDiscovered(): number {
+    return this._nbResourcesDiscovered;
+  }
+
   public get maxPopulation(): number {
     return 50 * this._level;
   }
@@ -69,7 +75,7 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public get radius(): number {
-    return 75 + 12.5 * this._level;
+    return Math.floor(75 + 12.5 * this._level);
   }
 
   public get territoryRadius(): number {
@@ -198,17 +204,16 @@ export default class Hive extends BasePlayerEntity {
     if (!this.doesKnowResource(resource.id)) {
       this._player.game.removeResource(resource.id);
       this._knownResources.push(resource);
-
-      // testing only
-      setTimeout(() => {
-        this._addBuildingRequest(resource);
-      }, 2000);
+      this._nbResourcesDiscovered++;
     }
   }
 
-  private _addBuildingRequest(knownResource: Resource): void {
-    removeFromArrayById(this._knownResources, knownResource.id);
-    this._buildingRequests.push(new BuildingRequest(knownResource));
+  public addBuildingRequest(knownResourceId: string): void {
+    const knownResource = removeFromArrayById(this._knownResources, knownResourceId);
+    if (knownResource) {
+      this.removeResourceUnits(buildingResourceCost);
+      this._buildingRequests.push(new BuildingRequest(knownResource));
+    }
   }
 
   public addBuilding(buildingRequest: BuildingRequest): void {
