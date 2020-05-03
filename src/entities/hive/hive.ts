@@ -210,7 +210,7 @@ export default class Hive extends BasePlayerEntity {
 
   public addBuildingRequest(knownResourceId: string): void {
     const knownResource = removeFromArrayById(this._knownResources, knownResourceId);
-    if (knownResource) {
+    if (knownResource && this._stock >= buildingResourceCost) {
       this.removeResourceUnits(buildingResourceCost);
       this._buildingRequests.push(new BuildingRequest(knownResource));
     }
