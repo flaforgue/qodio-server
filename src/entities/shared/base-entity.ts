@@ -1,13 +1,12 @@
 import Position from './position';
-import { v4 as uuidv4 } from 'uuid';
 import { isNear } from '../../utils';
+import IdEntity from './id-entity';
 
-export default class BaseEntity {
+export default class BaseEntity extends IdEntity {
   protected _position: Position;
-  public readonly id: string;
 
   public constructor(position: Position) {
-    this.id = uuidv4();
+    super();
     this._position = new Position(position.x, position.y);
   }
 
