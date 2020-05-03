@@ -6,6 +6,7 @@
 export default {
   boardHeight: 2400,
   boardWidth: 2400,
+  resourceConcentration: 0.00004, // resource per pixels square of the board
   nbPlayers: 1,
   fps: 60,
   step: 2, // Number of pixels a Drone can travel in one tick

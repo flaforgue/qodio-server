@@ -1,8 +1,7 @@
 import Resource from './resource';
 import Position from './shared/position';
 import { isNear, removeFromArrayById } from '../utils';
-
-const resourceConcentration = 0.00002; // resource per pixels square
+import config from '../config';
 
 export default class Board {
   public readonly width: number;
@@ -12,7 +11,7 @@ export default class Board {
   public constructor(width, height) {
     this.width = width;
     this.height = height;
-    this._generateResources(Math.floor(this.width * this.height * resourceConcentration));
+    this._generateResources(Math.floor(this.width * this.height * config.resourceConcentration));
   }
 
   private _generateResources(nbToGenerate: number): void {
