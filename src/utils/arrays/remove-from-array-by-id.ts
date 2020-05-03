@@ -1,7 +1,9 @@
-export default (arr: { id: string }[], id: string): { id: string }[] => {
+import { IdEntity } from '../../entities';
+
+export default <T extends IdEntity>(arr: T[], id: string): T => {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].id === id) {
-      return arr.splice(i, 1);
+      return arr.splice(i, 1)[0];
     }
   }
 };
