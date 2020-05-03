@@ -20,7 +20,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
   console.info('New connection');
 
   try {
-    if (!game || game.state === 'stopped') {
+    if (!game) {
       console.info('New game created');
       game = new Game();
     }
