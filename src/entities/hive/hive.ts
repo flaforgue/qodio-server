@@ -7,9 +7,9 @@ import Player from '../player';
 import BuildingRequest from './building-request';
 import { removeFromArrayById, randomFromArray, existsInArrayById } from '../../utils';
 import { droneActions } from '../../enums';
-
-const droneResourceCost = 10;
-const buildingResourceCost = 30;
+import { plainToClass } from 'class-transformer';
+import ResourceDTO from '../../dtos/resource.dto';
+import config from '../../config';
 
 export default class Hive extends BasePlayerEntity {
   public actionsNbDrones: Record<DroneAction, number> = {
@@ -20,13 +20,12 @@ export default class Hive extends BasePlayerEntity {
   };
 
   private _level = 1;
-  private _stock = 100;
+  private _stock = 10;
   private _drones: Drone[] = [];
   private readonly _player: Player;
   private _buildingRequests: BuildingRequest[] = [];
   private _knownResources: Resource[] = [];
   private _collectors: Resource[] = [];
-  private _nbResourcesDiscovered = 0;
 
   public constructor(player: Player, position: Position) {
     super(player.id, position);
@@ -60,10 +59,6 @@ export default class Hive extends BasePlayerEntity {
 
   public get collectors(): Resource[] {
     return this._collectors;
-  }
-
-  public get nbResourcesDiscovered(): number {
-    return this._nbResourcesDiscovered;
   }
 
   public get maxPopulation(): number {
@@ -102,8 +97,8 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public addDrone(action?: DroneAction): void {
-    if (this._drones.length < this.maxPopulation && this.stock >= droneResourceCost) {
-      this.removeResourceUnits(droneResourceCost);
+    if (this._drones.length < this.maxPopulation && this.stock >= config.droneResourceCost) {
+      this.removeResourceUnits(config.droneResourceCost);
       this._drones.push(new Drone(this.playerId, this, action));
     }
   }
@@ -113,7 +108,7 @@ export default class Hive extends BasePlayerEntity {
 
     if (droneToRecycle) {
       removeFromArrayById(this._drones, droneToRecycle.id);
-      this.addResourceUnits(droneResourceCost);
+      this.addResourceUnits(config.droneResourceCost);
     }
   }
 
@@ -204,16 +199,21 @@ export default class Hive extends BasePlayerEntity {
     if (!this.doesKnowResource(resource.id)) {
       this._player.game.removeResource(resource.id);
       this._knownResources.push(resource);
-      this._nbResourcesDiscovered++;
+      this._player.emitMessage('knownResource.created', plainToClass(ResourceDTO, resource));
     }
   }
 
-  public addBuildingRequest(knownResourceId: string): void {
-    const knownResource = removeFromArrayById(this._knownResources, knownResourceId);
-    if (knownResource && this._stock >= buildingResourceCost) {
-      this.removeResourceUnits(buildingResourceCost);
-      this._buildingRequests.push(new BuildingRequest(knownResource));
+  public addBuildingRequest(knownResourceId: string): boolean {
+    if (this._stock >= config.buildingResourceCost) {
+      const knownResource = removeFromArrayById(this._knownResources, knownResourceId);
+      if (knownResource) {
+        this.removeResourceUnits(config.buildingResourceCost);
+        this._buildingRequests.push(new BuildingRequest(knownResource));
+        return true;
+      }
     }
+
+    return false;
   }
 
   public addBuilding(buildingRequest: BuildingRequest): void {

@@ -20,6 +20,10 @@ export default class Game {
     this._board = new Board(config.boardWidth, config.boardHeight);
   }
 
+  public get isFull(): boolean {
+    return this.players.length >= config.nbPlayers;
+  }
+
   public get board(): Board {
     return this._board;
   }
@@ -36,13 +40,17 @@ export default class Game {
     return this._state;
   }
 
+  public emitMessage(socketId: string, name: string, data: unknown): void {
+    this._namespace.sockets[socketId].emit(name, data);
+  }
+
   private _update(): void {
     for (let i = 0; i < this._players.length; i++) {
       this._players[i].hive.update();
     }
   }
 
-  private _emit(): void {
+  private _emitGameTick(): void {
     for (const socketId in this._namespace.sockets) {
       if (Object.prototype.hasOwnProperty.call(this._namespace.sockets, socketId)) {
         this._namespace.sockets[socketId].volatile.emit('game.tick', plainToClass(GameDTO, this));
@@ -53,7 +61,7 @@ export default class Game {
   private _loop(): void {
     const start = hrtimeMs();
     this._update();
-    this._emit();
+    this._emitGameTick();
     const frameTime = hrtimeMs() - start;
 
     if (frameTime < this._tickInterval) {
@@ -84,10 +92,10 @@ export default class Game {
     }
   }
 
-  public addPlayer(): Player {
+  public addPlayer(socketId: string): Player {
     // const position = this._board.getRandomPosition();
     const position = new Position(400, 300);
-    const player = new Player(this, position);
+    const player = new Player(this, socketId, position);
     this._players.push(player);
     console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
 
@@ -97,10 +105,6 @@ export default class Game {
     );
 
     return player;
-  }
-
-  public get isFull(): boolean {
-    return this.players.length >= config.nbPlayers;
   }
 
   public removePlayer(playerId: string): void {

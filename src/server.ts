@@ -14,7 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = SocketIO(server);
 
-let game;
+let game: Game;
 
 io.on('connection', (socket: SocketIO.Socket) => {
   console.info('New connection');
@@ -27,7 +27,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
 
     if (!game.isFull) {
       socket.emit('game.create', plainToClass(GameDTO, game));
-      const player = game.addPlayer();
+      const player = game.addPlayer(socket.id);
       socket.emit('self.create', plainToClass(PlayerDTO, player));
 
       bindSystemEvents(socket, game, player);

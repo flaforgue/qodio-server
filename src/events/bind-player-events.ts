@@ -24,7 +24,8 @@ export default (socket: Socket, player: Player): void => {
   });
 
   socket.on('building.create', (knownResourceId: string) => {
-    player.addBuildingRequest(knownResourceId);
-    socket.emit('building.created', knownResourceId);
+    if (player.addBuildingRequest(knownResourceId)) {
+      socket.emit('building.created', knownResourceId);
+    }
   });
 };
