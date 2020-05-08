@@ -95,7 +95,7 @@ export default class Drone extends BasePlayerEntity {
 
   public moveToTarget(): void {
     if (this._target) {
-      this._isNearFromTarget = this.isNear(this._target, config.step);
+      this._isNearFromTarget = this.isNear(this._target, config.speed);
 
       if (!this._isNearFromTarget) {
         this._direction = this._getMoveDirection();
@@ -125,32 +125,32 @@ export default class Drone extends BasePlayerEntity {
   private _moveIntoDirection(): void {
     switch (this._direction) {
       case 'up':
-        this._position.y -= config.step;
+        this._position.y -= config.speed;
         break;
       case 'upright':
-        this._position.y -= config.step / 2;
-        this._position.x += config.step / 2;
+        this._position.y -= config.speed / 2;
+        this._position.x += config.speed / 2;
         break;
       case 'right':
-        this._position.x += config.step;
+        this._position.x += config.speed;
         break;
       case 'downright':
-        this._position.y += config.step / 2;
-        this._position.x += config.step / 2;
+        this._position.y += config.speed / 2;
+        this._position.x += config.speed / 2;
         break;
       case 'down':
-        this._position.y += config.step;
+        this._position.y += config.speed;
         break;
       case 'downleft':
-        this._position.y += config.step / 2;
-        this._position.x -= config.step / 2;
+        this._position.y += config.speed / 2;
+        this._position.x -= config.speed / 2;
         break;
       case 'left':
-        this._position.x -= config.step;
+        this._position.x -= config.speed;
         break;
       case 'upleft':
-        this._position.y -= config.step / 2;
-        this._position.x -= config.step / 2;
+        this._position.y -= config.speed / 2;
+        this._position.x -= config.speed / 2;
         break;
       default:
         break;
