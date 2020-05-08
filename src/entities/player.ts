@@ -40,4 +40,8 @@ export default class Player {
   public addBuildingRequest(resourceId: string): boolean {
     return this.hive.addBuildingRequest(resourceId);
   }
+
+  public upgradeHive(): boolean {
+    return this.hive.upgrade();
+  }
 }

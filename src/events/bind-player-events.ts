@@ -28,4 +28,10 @@ export default (socket: Socket, player: Player): void => {
       socket.emit('building.created', knownResourceId);
     }
   });
+
+  socket.on('hive.upgrade', () => {
+    if (player.upgradeHive()) {
+      socket.emit('hive.upgraded');
+    }
+  });
 };
