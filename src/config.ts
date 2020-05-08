@@ -1,13 +1,20 @@
 /* suitable configs
- * fps=60;step=2 ok <= 1000
- * fps=60;step=2 ok <= 2000
+ * fps=60;speed=2 ok if <= 1000 drones
+ * fps=60;speed=2 ok if <= 2000 drones
  */
 
 export default {
+  // game
+  fps: 60,
+  speed: 2, // Number of pixels a Drone can travel in one tick
+  nbPlayers: 1,
+
+  // board
   boardHeight: 2400,
   boardWidth: 2400,
-  resourceConcentration: 0.00004, // resource per pixels square of the board
-  nbPlayers: 1,
-  fps: 60,
-  step: 2, // Number of pixels a Drone can travel in one tick
+  resourceConcentration: 0.0001, // resource per pixels square of the board
+
+  // resource costs
+  droneResourceCost: 10,
+  buildingResourceCost: 30,
 };
