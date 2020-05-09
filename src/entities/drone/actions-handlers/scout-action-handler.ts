@@ -1,12 +1,11 @@
 import BaseActionHandler from './base-action-handler';
-import { findPositionInCircle, isInSquare, isInBoard } from '../../../utils';
+import { findPositionInCircle, isInBoard } from '../../../utils';
 import Position from '../../shared/position';
 import Resource from '../../resource';
-import config from '../../../config';
 
 export default class ScoutActionHandler extends BaseActionHandler {
   private _detectedResource: Resource;
-  private readonly _resourceDetectionRange = 30;
+  private readonly _resourceDetectionRange = 20;
 
   public reset(): void {
     this._detectedResource = null;

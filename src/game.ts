@@ -99,11 +99,6 @@ export default class Game {
     this._players.push(player);
     console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
 
-    this._board.createResource(
-      new Position(player.hive.position.x + 100, player.hive.position.y + 100),
-      500,
-    );
-
     return player;
   }
 

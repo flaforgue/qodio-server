@@ -1,6 +1,8 @@
 import { Socket } from 'socket.io';
 import { Player } from '../entities';
 import { DroneAction } from '../types';
+import HiveDTO from '../dtos/hive/hive.dto';
+import { plainToClass } from 'class-transformer';
 
 export default (socket: Socket, player: Player): void => {
   socket.on('drone.create', () => {
@@ -31,7 +33,7 @@ export default (socket: Socket, player: Player): void => {
 
   socket.on('hive.upgrade', () => {
     if (player.upgradeHive()) {
-      socket.emit('hive.upgraded');
+      socket.emit('hive.upgraded', plainToClass(HiveDTO, player.hive));
     }
   });
 };

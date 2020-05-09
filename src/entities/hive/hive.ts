@@ -20,7 +20,7 @@ export default class Hive extends BasePlayerEntity {
   };
 
   private _level = 1;
-  private _stock = 100;
+  private _stock = 50;
   private _drones: Drone[] = [];
   private readonly _player: Player;
   private _buildingRequests: BuildingRequest[] = [];
@@ -32,10 +32,10 @@ export default class Hive extends BasePlayerEntity {
     this._player = player;
 
     const initialDrones: { action: DroneAction; nbDrones: number }[] = [
-      { action: 'wait', nbDrones: 125 },
-      { action: 'scout', nbDrones: 125 },
-      { action: 'collect', nbDrones: 125 },
-      { action: 'build', nbDrones: 125 },
+      { action: 'wait', nbDrones: 10 },
+      { action: 'scout', nbDrones: 0 },
+      { action: 'collect', nbDrones: 0 },
+      { action: 'build', nbDrones: 0 },
     ];
 
     for (let i = 0; i < initialDrones.length; i++) {
@@ -62,8 +62,8 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public get maxPopulation(): number {
-    return 500;
-    // return 50 * this._level;
+    // return 500;
+    return 50 * this._level;
   }
 
   public get maxStock(): number {

@@ -15,9 +15,19 @@ export default class Board {
   }
 
   private _generateResources(nbToGenerate: number): void {
-    for (let i = 0; i < nbToGenerate; i++) {
-      this.createResource(this.getRandomPosition());
-    }
+    // for (let i = 0; i < nbToGenerate; i++) {
+    //   this.createResource(this.getRandomPosition());
+    // }
+
+    console.info('Ignoring', nbToGenerate);
+    this.createResource(new Position(100, 100));
+    this.createResource(new Position(100, 400));
+    this.createResource(new Position(100, 700));
+    this.createResource(new Position(400, 100));
+    this.createResource(new Position(700, 100));
+    this.createResource(new Position(400, 700));
+    this.createResource(new Position(700, 400));
+    this.createResource(new Position(700, 700));
   }
 
   public createResource(position: Position, initialStock?: number): void {
