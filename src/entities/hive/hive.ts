@@ -129,14 +129,18 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public handleUpgradeHiveEvent(): void {
-    if (this.action === 'wait' && this._level === 1 && this._stock >= config.upgradeResourceCost) {
-      this.removeResourceUnits(config.upgradeResourceCost);
+    if (
+      this.action === 'wait' &&
+      this._level < config.maxHiveLevel &&
+      this._stock >= config.hiveUpgradeResourceCosts[this._level]
+    ) {
+      this.removeResourceUnits(config.hiveUpgradeResourceCosts[this._level]);
       this.action = 'upgradeHive';
     }
   }
 
   public upgrade(): void {
-    this._level = 2;
+    this._level++;
     this._player.emitMessage('hive.upgraded', plainToClass(HiveDTO, this._player.hive));
   }
 
@@ -144,10 +148,10 @@ export default class Hive extends BasePlayerEntity {
     const canCreateDrone =
       this._action === 'wait' &&
       this._drones.length < this.maxPopulation &&
-      this.stock >= config.droneResourceCost;
+      this.stock >= config.droneCreationResourceCost;
 
     if (canCreateDrone) {
-      this.removeResourceUnits(config.droneResourceCost);
+      this.removeResourceUnits(config.droneCreationResourceCost);
       (this._actionsHandlers.createDrone as CreateDroneActionHandler).createdDroneAction = action;
       this.action = 'createDrone';
     }
@@ -171,7 +175,7 @@ export default class Hive extends BasePlayerEntity {
 
   public recycleDrone(droneToRecycle: Drone): void {
     removeFromArrayById(this._drones, droneToRecycle.id);
-    this.addResourceUnits(config.droneResourceCost);
+    this.addResourceUnits(config.droneCreationResourceCost);
     this._player.emitMessage('drone.recycled');
   }
 
@@ -269,10 +273,10 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public handleBuildingRequestEvent(knownResourceId: string): void {
-    if (this._stock >= config.buildingResourceCost) {
+    if (this._stock >= config.buildingCreationResourceCost) {
       const knownResource = removeFromArrayById(this._knownResources, knownResourceId);
       if (knownResource) {
-        this.removeResourceUnits(config.buildingResourceCost);
+        this.removeResourceUnits(config.buildingCreationResourceCost);
         this._buildingRequests.push(new BuildingRequest(knownResource));
         this._player.emitMessage('building.created', knownResourceId);
       }

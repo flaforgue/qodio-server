@@ -3,7 +3,7 @@ import BaseHiveActionHandler from './base-hive-action-handler';
 import config from '../../../config';
 
 export default class RecycleDroneActionHandler extends BaseHiveActionHandler {
-  protected readonly _speed = 100 / (5 * config.fps);
+  protected readonly _productivity = (100 / config.fps / 3) * config.hiveProductivity;
   public droneToRecycle: Drone;
 
   protected _terminateAction(): void {

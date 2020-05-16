@@ -3,7 +3,7 @@ import Hive from '../hive';
 import config from '../../../config';
 
 export default class BaseHiveActionHandler extends BaseActionHandler<Hive> {
-  protected readonly _speed = 1 / config.fps;
+  protected readonly _productivity = 1 / config.fps; // progression of the task by game tick
   protected _actionProgress = 0;
 
   public get actionProgress(): number {
@@ -11,7 +11,7 @@ export default class BaseHiveActionHandler extends BaseActionHandler<Hive> {
   }
 
   public handle(): boolean {
-    this._actionProgress += this._speed;
+    this._actionProgress += this._productivity;
 
     if (this._actionProgress >= 100) {
       this._terminateAction();

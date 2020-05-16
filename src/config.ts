@@ -8,6 +8,8 @@ export default {
   fps: 60,
   speed: 2, // Number of pixels a Drone can travel in one tick
   nbPlayers: 1,
+  maxHiveLevel: 3,
+  hiveProductivity: 1,
 
   // board
   boardHeight: 2400,
@@ -15,10 +17,13 @@ export default {
   resourceConcentration: 0.00004, // resource per pixels square of the board
 
   // resource costs
-  droneResourceCost: 10,
-  buildingResourceCost: 30,
-  upgradeResourceCost: 100,
+  droneCreationResourceCost: 10,
+  buildingCreationResourceCost: 30,
+  hiveUpgradeResourceCosts: {
+    1: 100,
+    2: 500,
+  },
 
   // initial state
-  hiveInitialResources: 150,
+  hiveInitialResources: 600,
 };
