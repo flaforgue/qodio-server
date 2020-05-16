@@ -1,1 +1,1 @@
-export default ['wait', 'scout', 'collect', 'build', 'attack'];
+export default ['wait', 'scout', 'collect', 'build', 'recycle', 'attack'];

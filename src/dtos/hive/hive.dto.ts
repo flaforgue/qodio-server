@@ -3,12 +3,18 @@ import BasePlayerEntityDTO from '../shared/base-player-entity.dto';
 import DroneDTO from '../drone/drone.dto';
 import BuildingRequestDTO from './building-request.dto';
 import ResourceDTO from '../resource.dto';
-import { DroneAction } from '../../types';
+import { DroneAction, HiveAction } from '../../types';
 
 @Exclude()
 export default class HiveDTO extends BasePlayerEntityDTO {
   @Expose()
   public level: number;
+
+  @Expose()
+  public action: HiveAction;
+
+  @Expose()
+  public actionProgress: number;
 
   @Expose()
   public radius: number;

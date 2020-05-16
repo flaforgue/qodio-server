@@ -1,39 +1,36 @@
 import { Socket } from 'socket.io';
 import { Player } from '../entities';
 import { DroneAction } from '../types';
-import HiveDTO from '../dtos/hive/hive.dto';
-import { plainToClass } from 'class-transformer';
+import { droneActions } from '../enums';
+
+const getValidDroneAction = (action: string): DroneAction => {
+  return droneActions.indexOf(action) === -1 ? 'wait' : (action as DroneAction);
+};
 
 export default (socket: Socket, player: Player): void => {
-  socket.on('drone.create', () => {
-    player.addDrone();
-    socket.emit('drone.created');
+  socket.on('drone.create', (action?: DroneAction) => {
+    player.handleCreateDroneEvent(getValidDroneAction(action));
   });
 
   socket.on('drone.recycle', () => {
-    player.recycleDrone();
-    socket.emit('drone.recycled');
-  });
-
-  socket.on('drone.engage', (action: DroneAction) => {
-    player.engageDrone(action);
-    socket.emit('drone.engaged', action);
-  });
-
-  socket.on('drone.disengage', (action: DroneAction) => {
-    player.disengageDrone(action);
-    socket.emit('drone.disengaged', action);
-  });
-
-  socket.on('building.create', (knownResourceId: string) => {
-    if (player.addBuildingRequest(knownResourceId)) {
-      socket.emit('building.created', knownResourceId);
-    }
+    player.handleRecycleDroneEvent();
   });
 
   socket.on('hive.upgrade', () => {
-    if (player.upgradeHive()) {
-      socket.emit('hive.upgraded', plainToClass(HiveDTO, player.hive));
+    player.handleUpgradeHiveEvent();
+  });
+
+  socket.on('drone.engage', (action: DroneAction) => {
+    player.handleEngageDroneEvent(getValidDroneAction(action));
+  });
+
+  socket.on('drone.disengage', (action: DroneAction) => {
+    player.handleDisengageDroneEvent(getValidDroneAction(action));
+  });
+
+  socket.on('building.create', (knownResourceId: string) => {
+    if (typeof knownResourceId === 'string') {
+      player.handleBuildingRequestEvent(knownResourceId);
     }
   });
 };

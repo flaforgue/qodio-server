@@ -1,9 +1,10 @@
-import BaseActionHandler from './base-action-handler';
+import BaseActionHandler from '../../shared/base-action-handler';
 import { findPositionInCircle, isInBoard } from '../../../utils';
 import Position from '../../shared/position';
 import Resource from '../../resource';
+import Drone from '../drone';
 
-export default class ScoutActionHandler extends BaseActionHandler {
+export default class ScoutActionHandler extends BaseActionHandler<Drone> {
   private _detectedResource: Resource;
   private readonly _resourceDetectionRange = 20;
 
@@ -14,14 +15,14 @@ export default class ScoutActionHandler extends BaseActionHandler {
   public handle(): boolean {
     this._forgetDetectedResourceIfInvalid();
 
-    if (!this._drone.target) {
-      this._drone.target = this._detectedResource?.position ?? this._findRandomTargetInTerritory();
+    if (!this._entity.target) {
+      this._entity.target = this._detectedResource?.position ?? this._findRandomTargetInTerritory();
     }
 
-    if (this._drone.isNearFromTarget) {
+    if (this._entity.isNearFromTarget) {
       this._handleTargetReached();
     } else {
-      this._drone.moveToTarget();
+      this._entity.moveToTarget();
 
       if (!this._detectedResource) {
         this._detectResourceIfPossible();
@@ -34,11 +35,11 @@ export default class ScoutActionHandler extends BaseActionHandler {
   private _forgetDetectedResourceIfInvalid(): void {
     if (this._detectedResource) {
       const isResourceEmpty = this._detectedResource.stock <= 0;
-      const isResourceAlreadyKnown = this._drone.hive.doesKnowResource(this._detectedResource.id);
+      const isResourceAlreadyKnown = this._entity.hive.doesKnowResource(this._detectedResource.id);
 
       if (isResourceEmpty || isResourceAlreadyKnown) {
         this._detectedResource = null;
-        this._drone.target = null;
+        this._entity.target = null;
       }
     }
   }
@@ -46,24 +47,27 @@ export default class ScoutActionHandler extends BaseActionHandler {
   private _findRandomTargetInTerritory(): Position {
     let newTarget;
     do {
-      newTarget = findPositionInCircle(this._drone.hive.position, this._drone.hive.territoryRadius);
+      newTarget = findPositionInCircle(
+        this._entity.hive.position,
+        this._entity.hive.territoryRadius,
+      );
     } while (!isInBoard(newTarget));
 
     return newTarget;
   }
 
   private _detectNewResourcesInRange(): Resource[] {
-    return this._drone.hive.detectNewResourcesInRange(
-      this._drone.position,
+    return this._entity.hive.detectNewResourcesInRange(
+      this._entity.position,
       this._resourceDetectionRange,
     );
   }
 
   private _handleTargetReached(): void {
-    this._drone.target = null;
+    this._entity.target = null;
 
     if (this._detectedResource) {
-      this._drone.hive.addKnownResource(this._detectedResource);
+      this._entity.hive.addKnownResource(this._detectedResource);
       this._detectedResource = null;
     }
   }
@@ -74,7 +78,7 @@ export default class ScoutActionHandler extends BaseActionHandler {
 
     if (resource) {
       this._detectedResource = resource;
-      this._drone.target = resource.position;
+      this._entity.target = resource.position;
     }
   }
 }

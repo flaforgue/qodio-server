@@ -1,7 +1,8 @@
-import BaseActionHandler from './base-action-handler';
+import BaseActionHandler from '../../shared/base-action-handler';
 import Resource from '../../resource';
+import Drone from '../drone';
 
-export default class CollectActionHandler extends BaseActionHandler {
+export default class CollectActionHandler extends BaseActionHandler<Drone> {
   private _targetedCollector: Resource;
   private readonly _carryingCapacity = 1;
   private _carriedResourceUnits = 0;
@@ -16,7 +17,7 @@ export default class CollectActionHandler extends BaseActionHandler {
 
   public handle(): boolean {
     if (!this._targetedCollector) {
-      this._targetedCollector = this._drone.hive.getNonEmptyCollector();
+      this._targetedCollector = this._entity.hive.getNonEmptyCollector();
     }
 
     if (this._targetedCollector) {
@@ -24,14 +25,14 @@ export default class CollectActionHandler extends BaseActionHandler {
         this._targetedCollector = null;
       } else {
         this._updateTargetIfCollecting();
-        this._drone.moveToTarget();
+        this._entity.moveToTarget();
         this._collectOrStoreResource();
       }
 
       return true;
     } else {
-      if (this._drone.target && !this._drone.hive.doesContainsPosition(this._drone.target)) {
-        this._drone.target = null;
+      if (this._entity.target && !this._entity.hive.doesContainsPosition(this._entity.target)) {
+        this._entity.target = null;
       }
 
       return false;
@@ -40,14 +41,14 @@ export default class CollectActionHandler extends BaseActionHandler {
 
   private _updateTargetIfCollecting(): void {
     if (this._carriedResourceUnits === 0) {
-      this._drone.target = this._targetedCollector.position;
+      this._entity.target = this._targetedCollector.position;
     } else {
-      this._drone.target = this._drone.hive.position;
+      this._entity.target = this._entity.hive.position;
     }
   }
 
   private _collectOrStoreResource(): void {
-    if (this._drone.isNearFromTarget) {
+    if (this._entity.isNearFromTarget) {
       if (!this._carriedResourceUnits) {
         this._collectResource();
       } else if (this._carriedResourceUnits) {
@@ -63,7 +64,7 @@ export default class CollectActionHandler extends BaseActionHandler {
   }
 
   private _storeResource(): void {
-    this._drone.hive.addResourceUnits(this._carriedResourceUnits);
+    this._entity.hive.addResourceUnits(this._carriedResourceUnits);
     this._carriedResourceUnits = 0;
   }
 }

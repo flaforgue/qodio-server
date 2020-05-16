@@ -5,7 +5,7 @@ import Hive from '../hive/hive';
 import { WaitActionHandler } from './actions-handlers';
 import { ScoutActionHandler } from './actions-handlers';
 import { CollectActionHandler } from './actions-handlers';
-import { BaseActionHandler } from './actions-handlers';
+import BaseActionHandler from '../shared/base-action-handler';
 import config from '../../config';
 import { BuildActionHandler } from './actions-handlers';
 import { findPositionInCircle } from '../../utils';
@@ -16,7 +16,7 @@ export default class Drone extends BasePlayerEntity {
   private _isNearFromTarget: boolean;
   private _direction: Direction;
   private _action: DroneAction;
-  private _actionsHandlers: Record<DroneAction, BaseActionHandler>;
+  private _actionsHandlers: Record<DroneAction, BaseActionHandler<Drone>>;
 
   public constructor(playerId: string, hive: Hive, action: DroneAction = 'wait') {
     super(playerId, hive.position);
@@ -26,6 +26,7 @@ export default class Drone extends BasePlayerEntity {
 
     this._actionsHandlers = {
       wait: new WaitActionHandler(this),
+      recycle: new WaitActionHandler(this), // acts like a waiting drone but cannot be engaged
       scout: new ScoutActionHandler(this),
       collect: new CollectActionHandler(this),
       build: new BuildActionHandler(this),

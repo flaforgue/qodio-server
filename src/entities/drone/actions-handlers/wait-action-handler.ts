@@ -1,8 +1,9 @@
-import BaseActionHandler from './base-action-handler';
+import BaseActionHandler from '../../shared/base-action-handler';
+import Drone from '../drone';
 
-export default class WaitActionHandler extends BaseActionHandler {
+export default class WaitActionHandler extends BaseActionHandler<Drone> {
   public handle(): boolean {
-    this._drone.moveAroundPosition(this._drone.hive.position, this._drone.hive.radius);
+    this._entity.moveAroundPosition(this._entity.hive.position, this._entity.hive.radius);
     return true;
   }
 }

@@ -12,10 +12,13 @@ export default {
   // board
   boardHeight: 2400,
   boardWidth: 2400,
-  resourceConcentration: 0.00002, // resource per pixels square of the board
+  resourceConcentration: 0.00004, // resource per pixels square of the board
 
   // resource costs
   droneResourceCost: 10,
   buildingResourceCost: 30,
   upgradeResourceCost: 100,
+
+  // initial state
+  hiveInitialResources: 150,
 };

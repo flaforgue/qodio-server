@@ -17,31 +17,35 @@ export default class Player {
     this.hive = new Hive(this, position);
   }
 
-  public emitMessage(name: string, data: unknown): void {
+  public emitMessage(name: string, data?: unknown): void {
     this.game.emitMessage(this.socketId, name, data);
   }
 
-  public addDrone(): void {
-    this.hive.addDrone();
+  public handleCreateDroneEvent(action: DroneAction): void {
+    this.hive.handleCreateDroneEvent(action);
   }
 
-  public recycleDrone(): void {
-    this.hive.recycleDrone();
+  public handleRecycleDroneEvent(): void {
+    this.hive.handleRecycleDroneEvent();
   }
 
-  public engageDrone(action: DroneAction): void {
-    this.hive.engageDrone(action);
+  public handleUpgradeHiveEvent(): void {
+    this.hive.handleUpgradeHiveEvent();
   }
 
-  public disengageDrone(action: DroneAction): void {
-    this.hive.disengageDrone(action);
+  public handleEngageDroneEvent(action: DroneAction): void {
+    this.hive.handleEngageDroneEvent(action);
   }
 
-  public addBuildingRequest(resourceId: string): boolean {
-    return this.hive.addBuildingRequest(resourceId);
+  public handleDisengageDroneEvent(action: DroneAction): void {
+    this.hive.handleDisengageDroneEvent(action);
   }
 
-  public upgradeHive(): boolean {
+  public handleBuildingRequestEvent(resourceId: string): void {
+    return this.hive.handleBuildingRequestEvent(resourceId);
+  }
+
+  public upgradeHive(): void {
     return this.hive.upgrade();
   }
 }
