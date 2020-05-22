@@ -49,7 +49,7 @@ export default class Hive extends BasePlayerEntity {
     };
 
     const initialDrones: { action: DroneAction; nbDrones: number }[] = [
-      { action: 'wait', nbDrones: 10 },
+      { action: 'wait', nbDrones: 5 },
       { action: 'scout', nbDrones: 0 },
       { action: 'collect', nbDrones: 0 },
       { action: 'build', nbDrones: 0 },

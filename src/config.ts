@@ -7,7 +7,7 @@ export default {
   // game
   fps: 60,
   speed: 2, // Number of pixels a Drone can travel in one tick
-  nbPlayers: 1,
+  nbPlayers: 2,
   maxHiveLevel: 3,
   hiveProductivity: 1,
 

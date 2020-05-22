@@ -93,8 +93,10 @@ export default class Game {
   }
 
   public addPlayer(socketId: string): Player {
-    // const position = this._board.getRandomPosition();
-    const position = new Position(400, 300);
+    const position = this._players.length
+      ? new Position(400, 300)
+      : new Position(config.boardWidth - 400, config.boardHeight - 300);
+
     const player = new Player(this, socketId, position);
     this._players.push(player);
     console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
