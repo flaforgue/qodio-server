@@ -1,7 +1,7 @@
 import Hive from './hive/hive';
 import Position from './shared/position';
 import { v4 as uuidv4 } from 'uuid';
-import Game from '../game';
+import Game from './game';
 import { DroneAction } from '../types';
 
 export default class Player {

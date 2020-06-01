@@ -15,3 +15,7 @@ export type Direction =
 export type HiveAction = 'wait' | 'createDrone' | 'recycleDrone' | 'upgradeHive';
 
 export type BuildingType = 'collector';
+
+export type Identifiable = {
+  id: string;
+};

@@ -1,4 +1,3 @@
-import handleException from './handle-exception';
 import isNear from './positions/is-near';
 import findPositionInCircle from './positions/find-position-in-circle';
 import randomFromArray from './arrays/random-from-array';
@@ -9,7 +8,6 @@ import isInSquare from './positions/is-in-square';
 import isInBoard from './positions/is-in-board';
 
 export {
-  handleException,
   isNear,
   findPositionInCircle,
   randomFromArray,

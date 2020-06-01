@@ -1,9 +1,9 @@
 import SocketIO from 'socket.io';
-import { Player, Board, Position } from './entities';
-import { hrtimeMs, removeFromArrayById } from './utils';
+import { Player, Board, Position } from '.';
+import { hrtimeMs, removeFromArrayById } from '../utils';
 import { plainToClass } from 'class-transformer';
-import { GameDTO } from './dtos';
-import config from './config';
+import { GameDTO } from '../dtos';
+import config from '../config';
 
 type GameState = 'stopped' | 'started';
 
@@ -94,8 +94,8 @@ export default class Game {
 
   public addPlayer(socketId: string): Player {
     const position = this._players.length
-      ? new Position(400, 300)
-      : new Position(config.boardWidth - 400, config.boardHeight - 300);
+      ? new Position(config.boardWidth - 400, config.boardHeight - 300)
+      : new Position(400, 300);
 
     const player = new Player(this, socketId, position);
     this._players.push(player);

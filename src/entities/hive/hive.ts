@@ -286,5 +286,6 @@ export default class Hive extends BasePlayerEntity {
   public addBuilding(buildingRequest: BuildingRequest): void {
     removeFromArrayById(this._buildingRequests, buildingRequest.id);
     this._collectors.push(buildingRequest.resource);
+    this._player.emitMessage('building.built', buildingRequest);
   }
 }
