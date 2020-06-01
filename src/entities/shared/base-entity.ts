@@ -1,6 +1,7 @@
 import Position from './position';
 import { isNear } from '../../utils';
 import { v4 as uuidv4 } from 'uuid';
+import config from '../../config';
 
 export default class BaseEntity {
   public readonly id: string;
@@ -15,7 +16,7 @@ export default class BaseEntity {
     return this._position;
   }
 
-  public isNear(target: Position, precision = 1): boolean {
+  public isNear(target: Position, precision = config.speed): boolean {
     return isNear(this._position, target, precision);
   }
 }

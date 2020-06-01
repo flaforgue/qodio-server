@@ -6,6 +6,10 @@ import existsInArrayById from './arrays/exists-in-array-by-id';
 import hrtimeMs from './hrtime-ms';
 import isInSquare from './positions/is-in-square';
 import isInBoard from './positions/is-in-board';
+import getValidWorkerAction from './drone-actions/get-valid-worker-action';
+import getValidWarriorAction from './drone-actions/get-valid-warrior-action';
+import isWorkerAction from './drone-actions/is-worker-action';
+import isWarriorAction from './drone-actions/is-warrior-action';
 
 export {
   isNear,
@@ -16,4 +20,8 @@ export {
   existsInArrayById,
   isInSquare,
   isInBoard,
+  getValidWorkerAction,
+  getValidWarriorAction,
+  isWorkerAction,
+  isWarriorAction,
 };

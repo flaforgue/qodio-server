@@ -1,11 +1,16 @@
 import BasePlayerEntity from '../shared/player-entity';
 import Drone from '../drone/drone';
 import Position from '../shared/position';
-import { DroneAction, HiveAction } from '../../types';
+import { DroneAction, HiveAction, WorkerAction } from '../../types';
 import Resource from '../resource';
 import Player from '../player';
 import BuildingRequest from './building-request';
-import { removeFromArrayById, randomFromArray, existsInArrayById } from '../../utils';
+import {
+  removeFromArrayById,
+  randomFromArray,
+  existsInArrayById,
+  isWorkerAction,
+} from '../../utils';
 import { droneActions } from '../../enums';
 import { plainToClass } from 'class-transformer';
 import ResourceDTO from '../../dtos/resource.dto';
@@ -22,13 +27,14 @@ import HiveDTO from '../../dtos/hive/hive.dto';
 export default class Hive extends BasePlayerEntity {
   public actionsNbDrones: Record<DroneAction, number> = {
     wait: 0,
+    defend: 0,
     scout: 0,
     collect: 0,
     build: 0,
     recycle: 0,
   };
 
-  private _level = 1;
+  private _level = 2;
   private _action: HiveAction = 'wait';
   private _actionsHandlers: Record<HiveAction, BaseHiveActionHandler>;
   private _stock = config.hiveInitialResources;
@@ -44,6 +50,7 @@ export default class Hive extends BasePlayerEntity {
     this._actionsHandlers = {
       wait: new BaseHiveActionHandler(this),
       createDrone: new CreateDroneActionHandler(this),
+      createWarrior: new CreateDroneActionHandler(this),
       recycleDrone: new RecycleDroneActionHandler(this),
       upgradeHive: new UpgradeHiveActionHandler(this),
     };
@@ -53,6 +60,7 @@ export default class Hive extends BasePlayerEntity {
       { action: 'scout', nbDrones: 0 },
       { action: 'collect', nbDrones: 0 },
       { action: 'build', nbDrones: 0 },
+      { action: 'defend', nbDrones: 0 },
     ];
 
     for (let i = 0; i < initialDrones.length; i++) {
@@ -120,7 +128,7 @@ export default class Hive extends BasePlayerEntity {
       this.actionsNbDrones[droneActions[i]] = 0;
     }
 
-    for (let i = 0; i < this.drones.length; i++) {
+    for (let i = 0; i < this._drones.length; i++) {
       this._drones[i].update();
       this.actionsNbDrones[this._drones[i].action]++;
     }
@@ -145,21 +153,32 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public handleCreateDroneEvent(action?: DroneAction): void {
-    const canCreateDrone =
+    let resourceCost;
+    let hiveAction;
+
+    if (isWorkerAction(action)) {
+      resourceCost = config.droneCreationResourceCost;
+      hiveAction = 'createDrone';
+    } else {
+      resourceCost = config.warriorCreationResourceCost;
+      hiveAction = 'createWarrior';
+    }
+
+    const canCreate =
       this._action === 'wait' &&
       this._drones.length < this.maxPopulation &&
-      this.stock >= config.droneCreationResourceCost;
+      this.stock >= resourceCost;
 
-    if (canCreateDrone) {
-      this.removeResourceUnits(config.droneCreationResourceCost);
+    if (canCreate) {
+      this.removeResourceUnits(resourceCost);
       (this._actionsHandlers.createDrone as CreateDroneActionHandler).createdDroneAction = action;
-      this.action = 'createDrone';
+      this.action = hiveAction;
     }
   }
 
   public createDrone(action?: DroneAction): void {
     this._drones.push(new Drone(this._playerId, this, action));
-    this._player.emitMessage('drone.created');
+    this._player.emitMessage(isWorkerAction(action) ? 'drone.created' : 'warrior.created');
   }
 
   public handleRecycleDroneEvent(): void {
@@ -187,7 +206,7 @@ export default class Hive extends BasePlayerEntity {
     }
   }
 
-  public handleDisengageDroneEvent(action: DroneAction): void {
+  public handleDisengageDroneEvent(action: WorkerAction): void {
     const engagedDrone = this._getEngagedDrone(action);
     if (engagedDrone) {
       engagedDrone.action = 'wait';

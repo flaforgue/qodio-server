@@ -3,7 +3,7 @@ import Drone from '../drone';
 
 export default class WaitActionHandler extends BaseActionHandler<Drone> {
   public handle(): boolean {
-    this._entity.moveAroundPosition(this._entity.hive.position, this._entity.hive.radius);
+    this._entity.moveNearPosition(this._entity.hive.position, this._entity.hive.radius);
     return true;
   }
 }

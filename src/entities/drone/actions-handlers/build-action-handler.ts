@@ -50,7 +50,7 @@ export default class BuildActionHandler extends BaseActionHandler<Drone> {
   }
 
   private _build(): boolean {
-    this._entity.moveAroundPosition(this._buildingRequest.position, buildingRange);
+    this._entity.moveNearPosition(this._buildingRequest.position, buildingRange);
     this._buildingRequest.addProgress(this._buildingCapacity);
 
     if (this._buildingRequest.progress >= 100) {

@@ -41,7 +41,16 @@
     "block-scoped-var": "error",
     "default-case": ["error"],
     "default-param-last": ["error"],
-    // "guard-for-in": ["error"],
+    "prefer-const": "error",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "memberLike",
+        "modifiers": ["private"],
+        "format": ["camelCase"],
+        "leadingUnderscore": "require"
+      }
+    ],
     "max-classes-per-file": ["error", 1],
     "no-caller": ["error"],
     "no-constructor-return": ["error"],

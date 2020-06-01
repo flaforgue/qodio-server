@@ -2,23 +2,23 @@ import Hive from './hive/hive';
 import Position from './shared/position';
 import { v4 as uuidv4 } from 'uuid';
 import Game from './game';
-import { DroneAction } from '../types';
+import { WorkerAction, DroneAction } from '../types';
 
 export default class Player {
   public readonly game: Game;
   public readonly hive: Hive;
   public readonly id: string;
-  private readonly socketId: string;
+  private readonly _socketId: string;
 
   public constructor(game: Game, socketId: string, position: Position) {
     this.id = uuidv4();
     this.game = game;
-    this.socketId = socketId;
+    this._socketId = socketId;
     this.hive = new Hive(this, position);
   }
 
   public emitMessage(name: string, data?: unknown): void {
-    this.game.emitMessage(this.socketId, name, data);
+    this.game.emitMessage(this._socketId, name, data);
   }
 
   public handleCreateDroneEvent(action: DroneAction): void {
@@ -33,11 +33,11 @@ export default class Player {
     this.hive.handleUpgradeHiveEvent();
   }
 
-  public handleEngageDroneEvent(action: DroneAction): void {
+  public handleEngageDroneEvent(action: WorkerAction): void {
     this.hive.handleEngageDroneEvent(action);
   }
 
-  public handleDisengageDroneEvent(action: DroneAction): void {
+  public handleDisengageDroneEvent(action: WorkerAction): void {
     this.hive.handleDisengageDroneEvent(action);
   }
 

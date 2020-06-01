@@ -1,15 +1,15 @@
 import { Socket } from 'socket.io';
 import { Player } from '../entities';
-import { DroneAction } from '../types';
-import { droneActions } from '../enums';
-
-const getValidDroneAction = (action: string): DroneAction => {
-  return droneActions.indexOf(action) === -1 ? 'wait' : (action as DroneAction);
-};
+import { DroneAction, WorkerAction, WarriorAction } from '../types';
+import { getValidWorkerAction, getValidWarriorAction, isWorkerAction } from '../utils';
 
 export default (socket: Socket, player: Player): void => {
   socket.on('drone.create', (action?: DroneAction) => {
-    player.handleCreateDroneEvent(getValidDroneAction(action));
+    player.handleCreateDroneEvent(getValidWorkerAction(action));
+  });
+
+  socket.on('warrior.create', (action?: WarriorAction) => {
+    player.handleCreateDroneEvent(getValidWarriorAction(action));
   });
 
   socket.on('drone.recycle', () => {
@@ -20,12 +20,16 @@ export default (socket: Socket, player: Player): void => {
     player.handleUpgradeHiveEvent();
   });
 
-  socket.on('drone.engage', (action: DroneAction) => {
-    player.handleEngageDroneEvent(getValidDroneAction(action));
+  socket.on('drone.engage', (action: WorkerAction) => {
+    if (isWorkerAction(action)) {
+      player.handleEngageDroneEvent(action);
+    }
   });
 
-  socket.on('drone.disengage', (action: DroneAction) => {
-    player.handleDisengageDroneEvent(getValidDroneAction(action));
+  socket.on('drone.disengage', (action: WorkerAction) => {
+    if (isWorkerAction(action)) {
+      player.handleDisengageDroneEvent(action);
+    }
   });
 
   socket.on('building.create', (knownResourceId: string) => {

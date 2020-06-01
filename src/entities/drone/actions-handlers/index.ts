@@ -2,5 +2,12 @@ import BuildActionHandler from './build-action-handler';
 import CollectActionHandler from './collect-action-handler';
 import ScoutActionHandler from './scout-action-handler';
 import WaitActionHandler from './wait-action-handler';
+import DefendActionHandler from './defend-action-handler';
 
-export { BuildActionHandler, CollectActionHandler, ScoutActionHandler, WaitActionHandler };
+export {
+  BuildActionHandler,
+  CollectActionHandler,
+  ScoutActionHandler,
+  WaitActionHandler,
+  DefendActionHandler,
+};
