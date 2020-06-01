@@ -2,7 +2,7 @@ import Hive from './hive/hive';
 import Position from './shared/position';
 import { v4 as uuidv4 } from 'uuid';
 import Game from './game';
-import { WorkerAction, DroneAction } from '../types';
+import { WorkerAction, WarriorAction } from '../types';
 
 export default class Player {
   public readonly game: Game;
@@ -21,8 +21,12 @@ export default class Player {
     this.game.emitMessage(this._socketId, name, data);
   }
 
-  public handleCreateDroneEvent(action: DroneAction): void {
+  public handleCreateDroneEvent(action: WorkerAction): void {
     this.hive.handleCreateDroneEvent(action);
+  }
+
+  public handleCreateWarriorEvent(action: WarriorAction): void {
+    this.hive.handleCreateWarriorEvent(action);
   }
 
   public handleRecycleDroneEvent(): void {

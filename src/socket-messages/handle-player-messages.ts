@@ -9,7 +9,7 @@ export default (socket: Socket, player: Player): void => {
   });
 
   socket.on('warrior.create', (action?: WarriorAction) => {
-    player.handleCreateDroneEvent(getValidWarriorAction(action));
+    player.handleCreateWarriorEvent(getValidWarriorAction(action));
   });
 
   socket.on('drone.recycle', () => {

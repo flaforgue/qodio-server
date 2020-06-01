@@ -9,7 +9,7 @@ export default {
   speed: 2, // Number of pixels a Drone can travel in one tick
   nbPlayers: 1,
   maxHiveLevel: 3,
-  hiveProductivity: 1,
+  hiveProductivity: 10,
 
   // board
   boardHeight: 2400,
@@ -26,5 +26,12 @@ export default {
   },
 
   // initial state
-  hiveInitialResources: 600,
+  hiveInitialResources: 1000,
+  hiveInitialDrones: [
+    { action: 'wait', nbDrones: 5 },
+    { action: 'scout', nbDrones: 0 },
+    { action: 'collect', nbDrones: 0 },
+    { action: 'build', nbDrones: 0 },
+    { action: 'defend', nbDrones: 10 },
+  ],
 };

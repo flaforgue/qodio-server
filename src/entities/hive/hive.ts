@@ -1,7 +1,7 @@
 import BasePlayerEntity from '../shared/player-entity';
 import Drone from '../drone/drone';
 import Position from '../shared/position';
-import { DroneAction, HiveAction, WorkerAction } from '../../types';
+import { DroneAction, HiveAction, WorkerAction, WarriorAction } from '../../types';
 import Resource from '../resource';
 import Player from '../player';
 import BuildingRequest from './building-request';
@@ -55,13 +55,7 @@ export default class Hive extends BasePlayerEntity {
       upgradeHive: new UpgradeHiveActionHandler(this),
     };
 
-    const initialDrones: { action: DroneAction; nbDrones: number }[] = [
-      { action: 'wait', nbDrones: 5 },
-      { action: 'scout', nbDrones: 0 },
-      { action: 'collect', nbDrones: 0 },
-      { action: 'build', nbDrones: 0 },
-      { action: 'defend', nbDrones: 0 },
-    ];
+    const initialDrones = config.hiveInitialDrones as { action: DroneAction; nbDrones: number }[];
 
     for (let i = 0; i < initialDrones.length; i++) {
       for (let j = 0; j < initialDrones[i].nbDrones; j++) {
@@ -152,18 +146,8 @@ export default class Hive extends BasePlayerEntity {
     this._player.emitMessage('hive.upgraded', plainToClass(HiveDTO, this._player.hive));
   }
 
-  public handleCreateDroneEvent(action?: DroneAction): void {
-    let resourceCost;
-    let hiveAction;
-
-    if (isWorkerAction(action)) {
-      resourceCost = config.droneCreationResourceCost;
-      hiveAction = 'createDrone';
-    } else {
-      resourceCost = config.warriorCreationResourceCost;
-      hiveAction = 'createWarrior';
-    }
-
+  public handleCreateDroneEvent(action?: WorkerAction): void {
+    const resourceCost = config.droneCreationResourceCost;
     const canCreate =
       this._action === 'wait' &&
       this._drones.length < this.maxPopulation &&
@@ -172,7 +156,21 @@ export default class Hive extends BasePlayerEntity {
     if (canCreate) {
       this.removeResourceUnits(resourceCost);
       (this._actionsHandlers.createDrone as CreateDroneActionHandler).createdDroneAction = action;
-      this.action = hiveAction;
+      this.action = 'createDrone';
+    }
+  }
+
+  public handleCreateWarriorEvent(action?: WarriorAction): void {
+    const resourceCost = config.warriorCreationResourceCost;
+    const canCreate =
+      this._action === 'wait' &&
+      this._drones.length < this.maxPopulation &&
+      this.stock >= resourceCost;
+
+    if (canCreate) {
+      this.removeResourceUnits(resourceCost);
+      (this._actionsHandlers.createWarrior as CreateDroneActionHandler).createdDroneAction = action;
+      this.action = 'createWarrior';
     }
   }
 
