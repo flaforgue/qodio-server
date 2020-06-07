@@ -41,7 +41,9 @@ export default class Game {
   }
 
   public emitMessage(socketId: string, name: string, data: unknown): void {
-    this._namespace.sockets[socketId].emit(name, data);
+    if (this._state === 'started') {
+      this._namespace.sockets[socketId].emit(name, data);
+    }
   }
 
   private _update(): void {
@@ -51,9 +53,11 @@ export default class Game {
   }
 
   private _emitGameTick(): void {
-    for (const socketId in this._namespace.sockets) {
-      if (Object.prototype.hasOwnProperty.call(this._namespace.sockets, socketId)) {
-        this._namespace.sockets[socketId].volatile.emit('game.tick', plainToClass(GameDTO, this));
+    if (this._state === 'started') {
+      for (const socketId in this._namespace.sockets) {
+        if (Object.prototype.hasOwnProperty.call(this._namespace.sockets, socketId)) {
+          this._namespace.sockets[socketId].volatile.emit('game.tick', plainToClass(GameDTO, this));
+        }
       }
     }
   }
@@ -93,20 +97,31 @@ export default class Game {
   }
 
   public addPlayer(socketId: string): Player {
-    const position = this._players.length
-      ? new Position(config.boardWidth - 400, config.boardHeight - 300)
-      : new Position(400, 300);
+    if (this._players.length < config.nbPlayers) {
+      const position = this._getNewPlayerPosition();
+      const player = new Player(this, socketId, position);
 
-    const player = new Player(this, socketId, position);
-    this._players.push(player);
-    console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
+      if (this._players.length) {
+        this.players[0].ennemyHivePosition = player.hive.position;
+        player.ennemyHivePosition = this.players[0].hive.position;
+      }
 
-    return player;
+      this._players.push(player);
+      console.info(`Player ${player.id} joined (${this._players.length}/${config.nbPlayers})`);
+
+      return player;
+    }
   }
 
   public removePlayer(playerId: string): void {
     console.info(`Player ${playerId} left (${this._players.length}/${config.nbPlayers})`);
     removeFromArrayById(this._players, playerId);
+  }
+
+  private _getNewPlayerPosition(): Position {
+    return this._players.length
+      ? new Position(config.boardWidth - 400, config.boardHeight - 300)
+      : new Position(400, 300);
   }
 
   public removeResource(resourceId: string): void {

@@ -39,6 +39,12 @@ export default class HiveDTO extends BasePlayerEntityDTO {
   public drones: DroneDTO;
 
   @Expose()
+  public nbWorkers: number;
+
+  @Expose()
+  public nbWarriors: number;
+
+  @Expose()
   public actionsNbDrones: Record<DroneAction, number>;
 
   @Expose()

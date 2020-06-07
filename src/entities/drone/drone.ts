@@ -2,12 +2,16 @@ import BasePlayerEntity from '../shared/player-entity';
 import Position from '../shared/position';
 import { DroneAction, Direction } from '../../types';
 import Hive from '../hive/hive';
-import { WaitActionHandler, DefendActionHandler } from './actions-handlers';
-import { ScoutActionHandler } from './actions-handlers';
-import { CollectActionHandler } from './actions-handlers';
+import {
+  BuildActionHandler,
+  ScoutActionHandler,
+  CollectActionHandler,
+  WaitActionHandler,
+  DefendActionHandler,
+  AttackActionHandler,
+} from './actions-handlers';
 import BaseActionHandler from '../shared/base-action-handler';
 import config from '../../config';
-import { BuildActionHandler } from './actions-handlers';
 import { findPositionInCircle } from '../../utils';
 
 export default class Drone extends BasePlayerEntity {
@@ -18,7 +22,12 @@ export default class Drone extends BasePlayerEntity {
   private _action: DroneAction;
   private _actionsHandlers: Record<DroneAction, BaseActionHandler<Drone>>;
 
-  public constructor(playerId: string, hive: Hive, action: DroneAction = 'wait') {
+  public constructor(
+    playerId: string,
+    hive: Hive,
+    ennemyHivePosition: Position,
+    action: DroneAction = 'wait',
+  ) {
     super(playerId, hive.position);
     this._hive = hive;
     this._action = action;
@@ -31,6 +40,7 @@ export default class Drone extends BasePlayerEntity {
       collect: new CollectActionHandler(this),
       build: new BuildActionHandler(this),
       defend: new DefendActionHandler(this),
+      attack: new AttackActionHandler(this, ennemyHivePosition),
     };
   }
 
@@ -71,19 +81,18 @@ export default class Drone extends BasePlayerEntity {
 
   public update(): void {
     switch (this._action) {
+      case 'wait':
       case 'scout':
-        this._actionsHandlers.scout.handle();
+      case 'defend':
+        this._actionsHandlers[this._action].handle();
         break;
-      case 'collect':
-        this._actionsHandlers.collect.handle() || this._actionsHandlers.wait.handle();
+      case 'attack':
+        this._actionsHandlers[this._action].handle() || this._actionsHandlers.defend.handle();
         break;
       case 'build':
-        this._actionsHandlers.build.handle() || this._actionsHandlers.wait.handle();
+      case 'collect':
+        this._actionsHandlers[this._action].handle() || this._actionsHandlers.wait.handle();
         break;
-      case 'defend':
-        this._actionsHandlers.defend.handle();
-        break;
-      case 'wait':
       default:
         this._actionsHandlers.wait.handle();
         break;
@@ -104,9 +113,13 @@ export default class Drone extends BasePlayerEntity {
 
       if (!this._isNearFromTarget) {
         this._direction = this._getMoveDirection();
-        this._moveIntoDirection();
+        this._moveToDirection();
       }
     }
+  }
+
+  public distanceFromTarget(): number {
+    return this._target ? this._position.distanceFrom(this._target) : 0;
   }
 
   private _getMoveDirection(): Direction {
@@ -127,7 +140,7 @@ export default class Drone extends BasePlayerEntity {
     return direction as Direction;
   }
 
-  private _moveIntoDirection(): void {
+  private _moveToDirection(): void {
     switch (this._direction) {
       case 'up':
         this._position.y -= config.speed;
@@ -160,5 +173,9 @@ export default class Drone extends BasePlayerEntity {
       default:
         break;
     }
+  }
+
+  public updateEnnemyHivePosition(position: Position): void {
+    (this._actionsHandlers.attack as AttackActionHandler).ennemyHivePosition = position;
   }
 }

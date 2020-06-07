@@ -3,6 +3,7 @@ import CollectActionHandler from './collect-action-handler';
 import ScoutActionHandler from './scout-action-handler';
 import WaitActionHandler from './wait-action-handler';
 import DefendActionHandler from './defend-action-handler';
+import AttackActionHandler from './attack-action-handler';
 
 export {
   BuildActionHandler,
@@ -10,4 +11,5 @@ export {
   ScoutActionHandler,
   WaitActionHandler,
   DefendActionHandler,
+  AttackActionHandler,
 };

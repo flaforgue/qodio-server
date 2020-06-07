@@ -10,6 +10,7 @@ import {
   randomFromArray,
   existsInArrayById,
   isWorkerAction,
+  isWarriorAction,
 } from '../../utils';
 import { droneActions } from '../../enums';
 import { plainToClass } from 'class-transformer';
@@ -25,8 +26,11 @@ import {
 import HiveDTO from '../../dtos/hive/hive.dto';
 
 export default class Hive extends BasePlayerEntity {
-  public actionsNbDrones: Record<DroneAction, number> = {
+  private _nbWarriors = 0;
+  private _nbWorkers = 0;
+  private _actionsNbDrones: Record<DroneAction, number> = {
     wait: 0,
+    attack: 0,
     defend: 0,
     scout: 0,
     collect: 0,
@@ -59,7 +63,7 @@ export default class Hive extends BasePlayerEntity {
 
     for (let i = 0; i < initialDrones.length; i++) {
       for (let j = 0; j < initialDrones[i].nbDrones; j++) {
-        this._drones.push(new Drone(this._playerId, this, initialDrones[i].action));
+        this.createDrone(initialDrones[i].action);
       }
     }
   }
@@ -117,14 +121,26 @@ export default class Hive extends BasePlayerEntity {
     return 1 * this._drones.length + 200;
   }
 
+  public get actionsNbDrones(): Record<DroneAction, number> {
+    return this._actionsNbDrones;
+  }
+
+  public get nbWorkers(): number {
+    return this._nbWorkers;
+  }
+
+  public get nbWarriors(): number {
+    return this._nbWarriors;
+  }
+
   public update(): void {
     for (let i = 0; i < droneActions.length; i++) {
-      this.actionsNbDrones[droneActions[i]] = 0;
+      this._actionsNbDrones[droneActions[i]] = 0;
     }
 
     for (let i = 0; i < this._drones.length; i++) {
       this._drones[i].update();
-      this.actionsNbDrones[this._drones[i].action]++;
+      this._actionsNbDrones[this._drones[i].action]++;
     }
 
     this._actionsHandlers[this._action].handle();
@@ -175,7 +191,13 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public createDrone(action?: DroneAction): void {
-    this._drones.push(new Drone(this._playerId, this, action));
+    if (action && isWarriorAction(action)) {
+      this._nbWarriors++;
+    } else {
+      this._nbWorkers++;
+    }
+
+    this._drones.push(new Drone(this._playerId, this, this._player.ennemyHivePosition, action));
     this._player.emitMessage(isWorkerAction(action) ? 'drone.created' : 'warrior.created');
   }
 
@@ -196,7 +218,7 @@ export default class Hive extends BasePlayerEntity {
     this._player.emitMessage('drone.recycled');
   }
 
-  public handleEngageDroneEvent(action: DroneAction): void {
+  public handleEngageDroneEvent(action: WorkerAction): void {
     const waitingDrone = this._getEngagedDrone('wait');
     if (waitingDrone) {
       waitingDrone.action = action;
@@ -209,6 +231,22 @@ export default class Hive extends BasePlayerEntity {
     if (engagedDrone) {
       engagedDrone.action = 'wait';
       this._player.emitMessage('drone.disengaged', action);
+    }
+  }
+
+  public handleEngageWarriorEvent(action: WarriorAction): void {
+    const defendingDrone = this._getEngagedDrone('defend');
+    if (defendingDrone) {
+      defendingDrone.action = action;
+      this._player.emitMessage('warrior.engaged', action);
+    }
+  }
+
+  public handleDisengageWarriorEvent(action: WarriorAction): void {
+    const engagedWarrior = this._getEngagedDrone(action);
+    if (engagedWarrior) {
+      engagedWarrior.action = 'defend';
+      this._player.emitMessage('warrior.disengaged', action);
     }
   }
 
@@ -304,5 +342,11 @@ export default class Hive extends BasePlayerEntity {
     removeFromArrayById(this._buildingRequests, buildingRequest.id);
     this._collectors.push(buildingRequest.resource);
     this._player.emitMessage('building.built', buildingRequest);
+  }
+
+  public updateEnnemyHivePosition(position: Position): void {
+    for (let i = 0; i < this._drones.length; i++) {
+      this._drones[i].updateEnnemyHivePosition(position);
+    }
   }
 }

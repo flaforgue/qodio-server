@@ -7,7 +7,7 @@ export default {
   // game
   fps: 60,
   speed: 2, // Number of pixels a Drone can travel in one tick
-  nbPlayers: 1,
+  nbPlayers: 2, // Currently 1 or 2 (missing multiple ennemies initialisation and selection when attacking)
   maxHiveLevel: 3,
   hiveProductivity: 10,
 
@@ -33,5 +33,6 @@ export default {
     { action: 'collect', nbDrones: 0 },
     { action: 'build', nbDrones: 0 },
     { action: 'defend', nbDrones: 10 },
+    { action: 'attack', nbDrones: 0 },
   ],
 };

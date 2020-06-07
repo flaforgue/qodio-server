@@ -1,1 +1,1 @@
-export default ['defend'];
+export default ['defend', 'attack'];

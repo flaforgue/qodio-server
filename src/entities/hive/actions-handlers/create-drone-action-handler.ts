@@ -8,7 +8,6 @@ export default class CreateDroneActionHandler extends BaseHiveActionHandler {
 
   protected _terminateAction(): void {
     this._entity.createDrone(this.createdDroneAction);
-    this.reset();
   }
 
   public reset(): void {

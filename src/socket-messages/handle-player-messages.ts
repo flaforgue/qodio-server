@@ -1,7 +1,12 @@
 import { Socket } from 'socket.io';
 import { Player } from '../entities';
 import { DroneAction, WorkerAction, WarriorAction } from '../types';
-import { getValidWorkerAction, getValidWarriorAction, isWorkerAction } from '../utils';
+import {
+  getValidWorkerAction,
+  getValidWarriorAction,
+  isWorkerAction,
+  isWarriorAction,
+} from '../utils';
 
 export default (socket: Socket, player: Player): void => {
   socket.on('drone.create', (action?: DroneAction) => {
@@ -29,6 +34,18 @@ export default (socket: Socket, player: Player): void => {
   socket.on('drone.disengage', (action: WorkerAction) => {
     if (isWorkerAction(action)) {
       player.handleDisengageDroneEvent(action);
+    }
+  });
+
+  socket.on('warrior.engage', (action: WarriorAction) => {
+    if (isWarriorAction(action)) {
+      player.handleEngageWarriorEvent(action);
+    }
+  });
+
+  socket.on('warrior.disengage', (action: WarriorAction) => {
+    if (isWarriorAction(action)) {
+      player.handleDisengageWarriorEvent(action);
     }
   });
 

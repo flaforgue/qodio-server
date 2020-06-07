@@ -1,4 +1,4 @@
-export type WarriorAction = 'defend';
+export type WarriorAction = 'defend' | 'attack';
 
 export type WorkerAction = 'wait' | 'scout' | 'collect' | 'build' | 'recycle';
 
