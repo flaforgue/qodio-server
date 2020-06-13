@@ -3,7 +3,7 @@ import Position from './shared/position';
 import { isNear, removeFromArrayById } from '../utils';
 import config from '../config';
 
-export default class Board {
+export default class Map {
   public readonly width: number;
   public readonly height: number;
   public readonly resources: Resource[] = [];

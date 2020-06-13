@@ -7,14 +7,14 @@ export default {
   // game
   fps: 60,
   speed: 2, // Number of pixels a Drone can travel in one tick
-  nbPlayers: 2, // Currently 1 or 2 (missing multiple ennemies initialisation and selection when attacking)
+  nbPlayers: 2, // Currently 1 or 2 (missing multiple ennemies init and selection when attacking)
   maxHiveLevel: 3,
   hiveProductivity: 10,
 
-  // board
-  boardHeight: 2400,
-  boardWidth: 2400,
-  resourceConcentration: 0.00004, // resource per pixel-squares of the board
+  // map
+  mapHeight: 1200,
+  mapWidth: 1200,
+  resourceConcentration: 0.00004, // resource per pixel-squares of the map
 
   // resource costs
   droneCreationResourceCost: 10,

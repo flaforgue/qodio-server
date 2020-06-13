@@ -66,6 +66,10 @@ export default class Drone extends BasePlayerEntity {
     return (this._actionsHandlers.collect as CollectActionHandler).carriedResourceUnits;
   }
 
+  public get attackProgress(): number {
+    return (this._actionsHandlers.attack as AttackActionHandler).attackProgress;
+  }
+
   public get isNearFromTarget(): boolean {
     return this._isNearFromTarget;
   }

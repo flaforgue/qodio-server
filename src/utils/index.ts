@@ -5,7 +5,7 @@ import removeFromArrayById from './arrays/remove-from-array-by-id';
 import existsInArrayById from './arrays/exists-in-array-by-id';
 import hrtimeMs from './hrtime-ms';
 import isInSquare from './positions/is-in-square';
-import isInBoard from './positions/is-in-board';
+import isInMap from './positions/is-in-map';
 import getValidWorkerAction from './drone-actions/get-valid-worker-action';
 import getValidWarriorAction from './drone-actions/get-valid-warrior-action';
 import isWorkerAction from './drone-actions/is-worker-action';
@@ -19,7 +19,7 @@ export {
   removeFromArrayById,
   existsInArrayById,
   isInSquare,
-  isInBoard,
+  isInMap,
   getValidWorkerAction,
   getValidWarriorAction,
   isWorkerAction,

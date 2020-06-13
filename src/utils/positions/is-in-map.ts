@@ -3,5 +3,5 @@ import config from '../../config';
 import isInSquare from './is-in-square';
 
 export default (position: Position): boolean => {
-  return isInSquare(position, config.boardWidth, config.boardHeight);
+  return isInSquare(position, config.mapWidth, config.mapHeight);
 };

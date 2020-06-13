@@ -1,12 +1,12 @@
 import { Expose, Exclude, Type } from 'class-transformer';
 import PlayerDTO from './player.dto';
-import BoardDTO from './board.dto';
+import MapDTO from './map.dto';
 
 @Exclude()
 export default class GameDTO {
   @Expose()
-  @Type(() => BoardDTO)
-  public board;
+  @Type(() => MapDTO)
+  public map;
 
   @Expose()
   @Type(() => PlayerDTO)

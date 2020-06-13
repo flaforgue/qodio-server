@@ -1,5 +1,5 @@
 import BaseActionHandler from '../../shared/base-action-handler';
-import { findPositionInCircle, isInBoard } from '../../../utils';
+import { findPositionInCircle, isInMap } from '../../../utils';
 import Position from '../../shared/position';
 import Resource from '../../resource';
 import Drone from '../drone';
@@ -51,7 +51,7 @@ export default class ScoutActionHandler extends BaseActionHandler<Drone> {
         this._entity.hive.position,
         this._entity.hive.territoryRadius,
       );
-    } while (!isInBoard(newTarget));
+    } while (!isInMap(newTarget));
 
     return newTarget;
   }

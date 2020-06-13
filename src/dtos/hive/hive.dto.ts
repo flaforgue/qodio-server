@@ -32,6 +32,12 @@ export default class HiveDTO extends BasePlayerEntityDTO {
   public maxPopulation: number;
 
   @Expose()
+  public life: number;
+
+  @Expose()
+  public maxLife: number;
+
+  @Expose()
   public nbResourcesDiscovered: number;
 
   @Expose()

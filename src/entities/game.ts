@@ -1,5 +1,5 @@
 import SocketIO from 'socket.io';
-import { Player, Board, Position } from '.';
+import { Player, Map, Position } from '.';
 import { hrtimeMs, removeFromArrayById } from '../utils';
 import { plainToClass } from 'class-transformer';
 import { GameDTO } from '../dtos';
@@ -9,7 +9,7 @@ type GameState = 'stopped' | 'started';
 
 export default class Game {
   private _start: number;
-  private readonly _board: Board;
+  private readonly _map: Map;
   private _namespace: SocketIO.Namespace;
   private _players: Player[] = [];
   private readonly _tickInterval = 1000 / config.fps;
@@ -17,15 +17,15 @@ export default class Game {
   private _state: GameState = 'stopped';
 
   public constructor() {
-    this._board = new Board(config.boardWidth, config.boardHeight);
+    this._map = new Map(config.mapWidth, config.mapHeight);
   }
 
   public get isFull(): boolean {
     return this.players.length >= config.nbPlayers;
   }
 
-  public get board(): Board {
-    return this._board;
+  public get map(): Map {
+    return this._map;
   }
 
   public get players(): Player[] {
@@ -120,11 +120,11 @@ export default class Game {
 
   private _getNewPlayerPosition(): Position {
     return this._players.length
-      ? new Position(config.boardWidth - 400, config.boardHeight - 300)
+      ? new Position(config.mapWidth - 400, config.mapHeight - 300)
       : new Position(400, 300);
   }
 
   public removeResource(resourceId: string): void {
-    this._board.removeResource(resourceId);
+    this._map.removeResource(resourceId);
   }
 }

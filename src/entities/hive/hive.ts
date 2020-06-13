@@ -39,6 +39,7 @@ export default class Hive extends BasePlayerEntity {
   };
 
   private _level = 2;
+  private _life = 0;
   private _action: HiveAction = 'wait';
   private _actionsHandlers: Record<HiveAction, BaseHiveActionHandler>;
   private _stock = config.hiveInitialResources;
@@ -51,6 +52,7 @@ export default class Hive extends BasePlayerEntity {
   public constructor(player: Player, position: Position) {
     super(player.id, position);
     this._player = player;
+    this._life = this.maxLife;
     this._actionsHandlers = {
       wait: new BaseHiveActionHandler(this),
       createDrone: new CreateDroneActionHandler(this),
@@ -111,6 +113,10 @@ export default class Hive extends BasePlayerEntity {
 
   public get maxStock(): number {
     return 1000 * this._level;
+  }
+
+  public get maxLife(): number {
+    return 1000 + 500 * this._level;
   }
 
   public get radius(): number {
@@ -291,7 +297,7 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public detectNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
-    return this._player.game.board
+    return this._player.game.map
       .detectResourcesIfPossible(position, detectionDistance)
       .filter((resource) => !this.doesKnowResource(resource.id));
   }
