@@ -26,6 +26,7 @@ export default {
   },
 
   // initial state
+  hiveInitialMaxLife: 1000,
   hiveInitialResources: 1000,
   hiveInitialDrones: [
     { action: 'wait', nbDrones: 5 },

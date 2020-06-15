@@ -1,4 +1,4 @@
-import BasePlayerEntity from '../shared/player-entity';
+import BasePlayerEntity from '../shared/base-player-entity';
 import Drone from '../drone/drone';
 import Position from '../shared/position';
 import { DroneAction, HiveAction, WorkerAction, WarriorAction } from '../../types';
@@ -39,20 +39,19 @@ export default class Hive extends BasePlayerEntity {
   };
 
   private _level = 2;
-  private _life = 0;
   private _action: HiveAction = 'wait';
   private _actionsHandlers: Record<HiveAction, BaseHiveActionHandler>;
   private _stock = config.hiveInitialResources;
   private _drones: Drone[] = [];
-  private readonly _player: Player;
   private _buildingRequests: BuildingRequest[] = [];
   private _knownResources: Resource[] = [];
   private _collectors: Resource[] = [];
 
+  public readonly player: Player;
+
   public constructor(player: Player, position: Position) {
-    super(player.id, position);
-    this._player = player;
-    this._life = this.maxLife;
+    super(player.id, position, config.hiveInitialMaxLife);
+    this.player = player;
     this._actionsHandlers = {
       wait: new BaseHiveActionHandler(this),
       createDrone: new CreateDroneActionHandler(this),
@@ -115,10 +114,6 @@ export default class Hive extends BasePlayerEntity {
     return 1000 * this._level;
   }
 
-  public get maxLife(): number {
-    return 1000 + 500 * this._level;
-  }
-
   public get radius(): number {
     return Math.floor(75 + 12.5 * this._level);
   }
@@ -137,6 +132,10 @@ export default class Hive extends BasePlayerEntity {
 
   public get nbWarriors(): number {
     return this._nbWarriors;
+  }
+
+  public die(): void {
+    this.player.game.stopGameLoop();
   }
 
   public update(): void {
@@ -165,7 +164,7 @@ export default class Hive extends BasePlayerEntity {
 
   public upgrade(): void {
     this._level++;
-    this._player.emitMessage('hive.upgraded', plainToClass(HiveDTO, this._player.hive));
+    this.player.emitMessage('hive.upgraded', plainToClass(HiveDTO, this.player.hive));
   }
 
   public handleCreateDroneEvent(action?: WorkerAction): void {
@@ -203,8 +202,8 @@ export default class Hive extends BasePlayerEntity {
       this._nbWorkers++;
     }
 
-    this._drones.push(new Drone(this._playerId, this, this._player.ennemyHivePosition, action));
-    this._player.emitMessage(isWorkerAction(action) ? 'drone.created' : 'warrior.created');
+    this._drones.push(new Drone(this._playerId, this, action));
+    this.player.emitMessage(isWorkerAction(action) ? 'drone.created' : 'warrior.created');
   }
 
   public handleRecycleDroneEvent(): void {
@@ -221,14 +220,14 @@ export default class Hive extends BasePlayerEntity {
   public recycleDrone(droneToRecycle: Drone): void {
     removeFromArrayById(this._drones, droneToRecycle.id);
     this.addResourceUnits(config.droneCreationResourceCost);
-    this._player.emitMessage('drone.recycled');
+    this.player.emitMessage('drone.recycled');
   }
 
   public handleEngageDroneEvent(action: WorkerAction): void {
     const waitingDrone = this._getEngagedDrone('wait');
     if (waitingDrone) {
       waitingDrone.action = action;
-      this._player.emitMessage('drone.engaged', action);
+      this.player.emitMessage('drone.engaged', action);
     }
   }
 
@@ -236,7 +235,7 @@ export default class Hive extends BasePlayerEntity {
     const engagedDrone = this._getEngagedDrone(action);
     if (engagedDrone) {
       engagedDrone.action = 'wait';
-      this._player.emitMessage('drone.disengaged', action);
+      this.player.emitMessage('drone.disengaged', action);
     }
   }
 
@@ -244,7 +243,7 @@ export default class Hive extends BasePlayerEntity {
     const defendingDrone = this._getEngagedDrone('defend');
     if (defendingDrone) {
       defendingDrone.action = action;
-      this._player.emitMessage('warrior.engaged', action);
+      this.player.emitMessage('warrior.engaged', action);
     }
   }
 
@@ -252,7 +251,7 @@ export default class Hive extends BasePlayerEntity {
     const engagedWarrior = this._getEngagedDrone(action);
     if (engagedWarrior) {
       engagedWarrior.action = 'defend';
-      this._player.emitMessage('warrior.disengaged', action);
+      this.player.emitMessage('warrior.disengaged', action);
     }
   }
 
@@ -297,7 +296,7 @@ export default class Hive extends BasePlayerEntity {
   }
 
   public detectNewResourcesInRange(position: Position, detectionDistance: number): Resource[] {
-    return this._player.game.map
+    return this.player.game.map
       .detectResourcesIfPossible(position, detectionDistance)
       .filter((resource) => !this.doesKnowResource(resource.id));
   }
@@ -327,9 +326,9 @@ export default class Hive extends BasePlayerEntity {
 
   public addKnownResource(resource: Resource): void {
     if (!this.doesKnowResource(resource.id)) {
-      this._player.game.removeResource(resource.id);
+      this.player.game.removeResource(resource.id);
       this._knownResources.push(resource);
-      this._player.emitMessage('knownResource.created', plainToClass(ResourceDTO, resource));
+      this.player.emitMessage('knownResource.created', plainToClass(ResourceDTO, resource));
     }
   }
 
@@ -339,7 +338,7 @@ export default class Hive extends BasePlayerEntity {
       if (knownResource) {
         this.removeResourceUnits(config.buildingCreationResourceCost);
         this._buildingRequests.push(new BuildingRequest(knownResource));
-        this._player.emitMessage('building.created', knownResourceId);
+        this.player.emitMessage('building.created', knownResourceId);
       }
     }
   }
@@ -347,12 +346,6 @@ export default class Hive extends BasePlayerEntity {
   public addBuilding(buildingRequest: BuildingRequest): void {
     removeFromArrayById(this._buildingRequests, buildingRequest.id);
     this._collectors.push(buildingRequest.resource);
-    this._player.emitMessage('building.built', buildingRequest);
-  }
-
-  public updateEnnemyHivePosition(position: Position): void {
-    for (let i = 0; i < this._drones.length; i++) {
-      this._drones[i].updateEnnemyHivePosition(position);
-    }
+    this.player.emitMessage('building.built', buildingRequest);
   }
 }

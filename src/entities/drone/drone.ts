@@ -1,4 +1,4 @@
-import BasePlayerEntity from '../shared/player-entity';
+import BasePlayerEntity from '../shared/base-player-entity';
 import Position from '../shared/position';
 import { DroneAction, Direction } from '../../types';
 import Hive from '../hive/hive';
@@ -22,12 +22,7 @@ export default class Drone extends BasePlayerEntity {
   private _action: DroneAction;
   private _actionsHandlers: Record<DroneAction, BaseActionHandler<Drone>>;
 
-  public constructor(
-    playerId: string,
-    hive: Hive,
-    ennemyHivePosition: Position,
-    action: DroneAction = 'wait',
-  ) {
+  public constructor(playerId: string, hive: Hive, action: DroneAction = 'wait') {
     super(playerId, hive.position);
     this._hive = hive;
     this._action = action;
@@ -40,7 +35,7 @@ export default class Drone extends BasePlayerEntity {
       collect: new CollectActionHandler(this),
       build: new BuildActionHandler(this),
       defend: new DefendActionHandler(this),
-      attack: new AttackActionHandler(this, ennemyHivePosition),
+      attack: new AttackActionHandler(this),
     };
   }
 
@@ -81,6 +76,10 @@ export default class Drone extends BasePlayerEntity {
   public set target(position: Position) {
     this._target = position;
     this._isNearFromTarget = false;
+  }
+
+  public die(): void {
+    console.log('A drone just died');
   }
 
   public update(): void {
@@ -177,9 +176,5 @@ export default class Drone extends BasePlayerEntity {
       default:
         break;
     }
-  }
-
-  public updateEnnemyHivePosition(position: Position): void {
-    (this._actionsHandlers.attack as AttackActionHandler).ennemyHivePosition = position;
   }
 }

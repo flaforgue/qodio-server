@@ -1,0 +1,5 @@
+todo
+replace hive menu lifebar with a one on map, displayer if life < maxLife
+when the game is stopped, a last tick is sent
+add an explosion animation when the hive dies
+display a message when the game is stopped

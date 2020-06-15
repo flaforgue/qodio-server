@@ -5,4 +5,10 @@ import BaseEntityDTO from './base-entity.dto';
 export default class BasePlayerEntityDTO extends BaseEntityDTO {
   @Expose()
   public playerId: string;
+
+  @Expose()
+  public maxLife: string;
+
+  @Expose()
+  public life: string;
 }

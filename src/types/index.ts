@@ -1,3 +1,5 @@
+import { Position } from '../entities';
+
 export type WarriorAction = 'defend' | 'attack';
 
 export type WorkerAction = 'wait' | 'scout' | 'collect' | 'build' | 'recycle';
@@ -23,3 +25,11 @@ export type BuildingType = 'collector';
 export type Identifiable = {
   id: string;
 };
+
+export interface Attackable {
+  readonly life: number;
+  readonly maxLife: number;
+  readonly position: Position;
+  loseLife(amount: number): void;
+  die(): void;
+}

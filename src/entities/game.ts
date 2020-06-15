@@ -102,8 +102,8 @@ export default class Game {
       const player = new Player(this, socketId, position);
 
       if (this._players.length) {
-        this.players[0].ennemyHivePosition = player.hive.position;
-        player.ennemyHivePosition = this.players[0].hive.position;
+        this.players[0].ennemyHive = player.hive;
+        player.ennemyHive = this.players[0].hive;
       }
 
       this._players.push(player);

@@ -9,22 +9,13 @@ export default class Player {
   public readonly hive: Hive;
   public readonly id: string;
   private readonly _socketId: string;
-  private _ennemyHivePosition: Position;
+  public ennemyHive: Hive;
 
   public constructor(game: Game, socketId: string, position: Position) {
     this.id = uuidv4();
     this.game = game;
     this._socketId = socketId;
     this.hive = new Hive(this, position);
-  }
-
-  public set ennemyHivePosition(position: Position) {
-    this._ennemyHivePosition = position;
-    this.hive.updateEnnemyHivePosition(position);
-  }
-
-  public get ennemyHivePosition(): Position {
-    return this._ennemyHivePosition;
   }
 
   public emitMessage(name: string, data?: unknown): void {
